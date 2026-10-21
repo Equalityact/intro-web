@@ -3,7 +3,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const root = path.resolve(__dirname, '..');
+const root = path.resolve(__dirname, '..', 'public');
 
 module.exports = function cleanUrls(req, res, next) {
   const [pathname, query = ''] = req.url.split('?');

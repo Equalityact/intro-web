@@ -4,9 +4,9 @@
   "private": true,
   "description": "차별금지법 안내 사이트 초안",
   "scripts": {
-    "build": "python3 scripts/build.py",
-    "dev": "live-server --port=3000 --no-browser --middleware=$PWD/scripts/clean-urls.js",
-    "start": "live-server --port=3000 --middleware=$PWD/scripts/clean-urls.js"
+    "generate": "python3 scripts/build.py",
+    "dev": "live-server public --port=3000 --no-browser --middleware=$PWD/scripts/clean-urls.js",
+    "start": "live-server public --port=3000 --middleware=$PWD/scripts/clean-urls.js"
   },
   "devDependencies": {
     "live-server": "^1.2.2"

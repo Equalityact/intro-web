@@ -1,13 +1,13 @@
 """차별금지법 사이트 페이지 생성기.
 
-원고(문구)는 이 파일 안에서 고치고 `npm run build`로 루트의 HTML을 다시 만듭니다.
+원고(문구)는 이 파일 안에서 고치고 `npm run generate`로 public/ 의 HTML을 다시 만듭니다.
 출력은 빌드 없이 그대로 열람 가능한 정적 HTML입니다.
 """
 import re
 import sys
 from pathlib import Path
 
-OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent
+OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "public"
 
 PAGES = [
     ("about.html", "01", "차별금지법이란?", "차별금지법이 뭐야?"),
