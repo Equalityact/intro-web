@@ -49,10 +49,10 @@
           await navigator.share({ title: '차별금지법', text: '차별금지법, 모두를 위한 평등의 기준', url });
         } else {
           await navigator.clipboard.writeText(url);
-          announce('사이트 링크를 복사했습니다.');
+          announce('사이트 링크 복사 완료');
         }
       } catch (error) {
-        if (error.name !== 'AbortError') announce('주소창의 링크를 복사해 공유해 주세요.');
+        if (error.name !== 'AbortError') announce('사이트 링크 복사 실패');
       }
     });
   });
@@ -90,54 +90,18 @@
     filterQuestions();
   }
 
-  const sceneButtons = $$('[data-scene]');
-  const scenePanels = $$('[data-scene-panel]');
-  if (sceneButtons.length) {
-    function showScene(selected) {
-      sceneButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.scene === selected)));
-      scenePanels.forEach(panel => { panel.hidden = panel.dataset.scenePanel !== selected; });
-    }
-    $('.scene-selector').hidden = false;
-    showScene(sceneButtons[0].dataset.scene);
-    sceneButtons.forEach(button => button.addEventListener('click', () => showScene(button.dataset.scene)));
-  }
-
-  const timelineButtons = $$('[data-timeline]');
-  function filterTimeline(kind) {
-    let count = 0;
-    timelineButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.timeline === kind)));
-    $$('.period').forEach(period => {
-      const items = $$('.timeline-item', period);
-      items.forEach(item => {
-        item.hidden = kind !== 'all' && item.dataset.kind !== kind;
-        if (!item.hidden) count++;
-      });
-      period.hidden = items.every(item => item.hidden);
-    });
-    $('#timeline-count').textContent = `사건 ${count}개`;
-  }
-  if (timelineButtons.length) {
-    $('#timeline-filters').hidden = false;
-    timelineButtons.forEach(button => button.addEventListener('click', () => filterTimeline(button.dataset.timeline)));
-  }
-
-  // A direct question/period link must remain reachable after a search or filter.
+  // Reveal a linked answer even when the current search hides it.
   function openFromHash() {
     let id;
     try { id = decodeURIComponent(location.hash.slice(1)); } catch { return; }
     const target = id && document.getElementById(id);
     if (!target) return;
-    if (target.matches('#faq-list .qa')) {
-      search.value = '';
-      filterQuestions();
+    if (target.matches('details.qa')) {
+      if (search) { search.value = ''; filterQuestions(); }
       target.open = true;
     }
-    if (target.matches('.period') && target.hidden) filterTimeline('all');
     if (target.matches('details, .period')) target.scrollIntoView();
   }
   openFromHash();
   window.addEventListener('hashchange', openFromHash);
-  $$('.page-toc a').forEach(link => link.addEventListener('click', () => {
-    if (timelineButtons.length) filterTimeline('all');
-  }));
 })();
