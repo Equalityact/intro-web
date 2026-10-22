@@ -14,7 +14,7 @@ PAGES = [
     ("about.html", "01", "차별금지법이란?", "차별금지법이 뭐야?"),
     ("scenes.html", "02", "일상의 변화", "차별금지법이 바꿀 우리 사회의 장면들"),
     ("why.html", "03", "필요한 이유", "차별금지법이 제정될 수밖에 없는 이유"),
-    ("qna.html", "04", "오해와 사실", "차별금지법에 관한 질문들"),
+    ("qna.html", "04", "Q&A", "차별금지법에 관한 질문들"),
     ("timeline.html", "05", "타임라인", "차별금지법 타임라인"),
     ("resources.html", "06", "자료", "더 보기"),
 ]
@@ -25,10 +25,11 @@ LINKS = {
     "leaflet": "https://forms.gle/xWYDviRJrtsjUtcMA",
     "newsletter": "https://equalityact.stibee.com/",
     "facebook": "https://www.facebook.com/equalact2017",
-    "instagram": "https://www.instagram.com/equalityact_allpeople",
-    "twitter": "https://twitter.com/equalact",
+    "instagram": "https://www.instagram.com/equalityact_allpeople/",
+    "twitter": "https://x.com/equalact",
 }
 EXT = 'target="_blank" rel="noopener noreferrer"'
+RESEARCH_REPORT_URL = 'https://hrcopinion.co.kr/wp-content/uploads/2026/08/393-2-%EB%B3%B4%EA%B3%A0%EC%84%9C_%ED%95%9C%EA%B5%AD%EB%A6%AC%EC%84%9C%EC%B9%98-%EC%A3%BC%EA%B0%84%EB%A6%AC%ED%8F%AC%ED%8A%B8_%EC%97%AC%EB%A1%A0%EC%86%8D%EC%9D%98%EC%97%AC%EB%A1%A0-%EC%A0%9C393-2%ED%98%B82025%EB%85%84-8%EC%9B%94-19%EC%9D%BC_%EB%8F%99%EC%84%B1%EA%B2%B0%ED%98%BC-%EB%B2%95%EC%A0%81-%ED%97%88%EC%9A%A9-%EC%B0%A8%EB%B3%84%EA%B8%88%EC%A7%80%EB%B2%95-%EC%A0%9C%EC%A0%95.pdf'
 
 GROUNDS = ["성별", "장애", "질병", "나이", "출신국가", "출신민족", "인종", "피부색", "출신지역",
            "용모·유전정보 등 신체조건", "혼인여부", "임신·출산", "가족형태 및 가족상황", "종교",
@@ -244,7 +245,7 @@ scenes_body = page_hero(
 </div></section>""" + pager("scenes.html")
 
 # ---------------------------------------------------------------- 03 why
-SURVEYS = """<div class="survey">
+SURVEYS = f"""<div class="survey">
   <h3>차별금지법 제정 찬성</h3>
   <div class="rate-row">
     <div class="rate-label"><span>한국갤럽 · 2026년 3~4월</span><strong>55%</strong></div>
@@ -253,10 +254,10 @@ SURVEYS = """<div class="survey">
     <a class="rate-source" href="https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1632" target="_blank" rel="noopener noreferrer">조사 2026.3.31~4.2 · 1,001명 · 한국갤럽 원문 ↗</a>
   </div>
   <div class="rate-row">
-    <div class="rate-label"><span>한국리서치 · 2026년 5월</span><strong>51%</strong></div>
+    <div class="rate-label"><span>한국리서치 · 여론속의여론</span><strong>51%</strong></div>
     <div class="rate-track" role="img" aria-label="한국리서치 조사 제정 찬성 51퍼센트"><div class="rate-fill" style="--value:51%"></div></div>
     <div class="scale"><span>0%</span><span>100%</span></div>
-    <span class="rate-source">조사 2026.5.22~26 · 1,000명 · 주간리포트 제393-2호 <em>(출처 링크 확인 필요)</em></span>
+    <a class="rate-source" href="{RESEARCH_REPORT_URL}" {EXT}>주간리포트 제393-2호 · PDF 원문 ↗</a><p class="caption">조사 시점은 원문 확인 후 보완합니다.</p>
   </div>
   <div class="rate-row support">
     <div class="rate-label"><span>평등권 보장을 위한 법률 제정의 필요성에 동의<br><small class="muted">질문이 다른 보조 근거</small></span><strong>88.5%</strong></div>
@@ -350,11 +351,8 @@ QA = [
 ]
 
 
-def qa_item(i, question, summary, detail=None):
-    if detail:
-        content = f'<p class="detail-label">자세한 답변</p><p>{detail}</p>'
-    else:
-        content = f'<p><a class="text-link" href="qna.html#q{i}">자세한 답변과 설명 보기 →</a></p>'
+def qa_item(i, question, summary, detail):
+    content = f'<p class="detail-label">자세한 답변</p><p>{detail}</p>'
     return f"""<details class="qa" id="q{i}">
   <summary><span class="q-number">Q{i}</span><span class="q-copy"><span class="q-title">{question}</span><span class="q-preview">{summary}</span></span><span class="q-toggle" aria-hidden="true"></span></summary>
   <div class="q-detail">{content}</div>
@@ -513,7 +511,6 @@ scene_cards = "".join(f"""<a class="scene-card" href="scenes.html#{sid}">
   <h3>{name}</h3><p>{SCENE_EXAMPLES[sid][2].replace(chr(10), ' ')}</p>
   <span class="scene-link">일상 장면 살펴보기 <span class="arrow" aria-hidden="true">→</span></span>
 </a>""" for i, ((sid, name, *_), glyph) in enumerate(zip(SCENES, ["[ ]", "?", "↔", "="]), 1))
-qa_simple = "\n".join(qa_item(i, q, summary) for i, (q, summary, _) in enumerate(QA, 1) if i in (2, 8, 9))
 
 index_body = f"""<section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero-grid">
@@ -521,7 +518,7 @@ index_body = f"""<section class="hero" aria-labelledby="hero-title">
       <p class="overline">차별금지법, 함께 알아보기</p>
       <h1 id="hero-title">차별금지법,<br>모두를 위한<br><mark>평등의 기준</mark></h1>
       <p class="hero-lead">우리의 일상이 조금씩 더 평등해지도록,<br>차별금지법 제정부터 시작해요!</p>
-      <div class="actions"><a class="btn purple" href="about.html">법 알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">오해 문답 보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+      <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
     </div>
     <div class="shape-panel"><small>혼자 남겨두지 않겠다는 약속</small><span class="eq" aria-hidden="true">=</span><p class="shape-caption">차별 없는 사회,<br>함께 시작해요.</p></div>
   </div>
@@ -531,9 +528,9 @@ index_body = f"""<section class="hero" aria-labelledby="hero-title">
   <p class="label">01 / 차별금지법 3줄 요약</p>
   <h2 class="section-title" id="summary-title">차별금지법은<br><span class="mark">어떤 일을 하는 법</span>일까요?</h2>
   <div class="pillars">
-    <article class="pillar"><div class="role">기준</div><h3>평등의 기준을<br>세우는 법</h3><p>차별이 무엇인지 정하고,<br>차별을 막고 예방합니다.</p></article>
-    <article class="pillar"><div class="role">곁</div><h3>차별에 맞서는<br>용기를 돕는 법</h3><p>차별에 맞서는 사람의 곁에서<br>대응과 일상의 회복을 돕습니다.</p></article>
-    <article class="pillar"><div class="role">책임</div><h3>차별 없는 사회,<br>국가의 책임</h3><p>차별을 없애고 예방할 책임이<br>국가에 있음을 분명히 합니다.</p></article>
+    <article class="pillar"><div class="role">기준</div><h3>평등의 기준을<br>세우는 법</h3><p>차별금지법은 차별이 무엇인지 정하고, 차별을 포괄적으로 막고 예방합니다.</p></article>
+    <article class="pillar"><div class="role">곁</div><h3>차별에 맞서는<br>용기를 돕는 법</h3><p>차별금지법은 차별에 맞서는 사람의 곁에 서서, 용기 있는 대응과 일상의 회복을 만듭니다.</p></article>
+    <article class="pillar"><div class="role">책임</div><h3>차별 없는 사회,<br>국가가 만들어야 합니다.</h3><p>차별금지법은 차별을 없애고 예방할 책임이 국가에 있음을 분명히 합니다.</p></article>
   </div>
   <div class="all-of-us">우리의 일상이 조금씩 더 평등해지도록</div>
 </div></section>
@@ -541,27 +538,28 @@ index_body = f"""<section class="hero" aria-labelledby="hero-title">
 <section class="section soft" aria-labelledby="grounds-title"><div class="wrap">
   <p class="label">02 / 차별금지사유</p>
   <h2 class="section-title" id="grounds-title">누구도 혼자<br>남겨두지 않는 법</h2>
-  <p class="section-intro">어떤 이유로 차별받았나요?<br>차별을 금지하는 이유를 ‘차별금지사유’라고 해요.</p>
+  <p class="section-intro">어떠한 이유로도 차별받지 않도록, 차별금지법은 누구도 혼자 남겨두지 않겠다는 평등의 약속입니다.</p>
   {grounds_html()}
   <p class="caption">누구나 어떤 상황에서는 차별받는 소수자가 될 수 있어요.</p>
-  <div class="section-foot"><a class="text-link" href="about.html#grounds">차별금지사유 더 알아보기 →</a></div>
+  <div class="section-foot"><a class="text-link" href="about.html#grounds">더 알아보기 →</a></div>
 </div></section>
 
 <section class="section" aria-labelledby="scenes-title"><div class="wrap">
   <p class="label">03 / 우리의 일상</p>
   <h2 class="section-title" id="scenes-title">차별금지법이 바꿀<br>우리 사회의 장면들</h2>
   <div class="scene-grid">{scene_cards}</div>
+  <div class="section-foot"><a class="text-link" href="scenes.html">더 알아보기 →</a></div>
 </div></section>
 
 <section class="section soft" aria-labelledby="stats-title"><div class="wrap">
-  <p class="label">04 / 통계와 근거</p>
-  <h2 class="section-title" id="stats-title">차별금지법 제정에<br>과반이 찬성했어요.</h2>
+  <p class="label">04 / 통계와 설득</p>
+  <h2 class="section-title" id="stats-title">차별금지법에 대한 사회적 합의는<br>여전히 ‘아직’일까요?</h2>
   <div class="stat-hero section-content">
     <div>
-      <p class="reading">차별금지법을 향한 시민의 요구와 국제사회의 권고가 이어져 왔습니다. 조사별 질문과 시점, 근거를 함께 살펴봐요.</p>
+      <h3 class="callout-title">많은 시민이 차별금지법을 원하고 있어요.</h3><p class="caption">조사별 수치와 질문·시점·출처를 함께 살펴봐요.</p>
       <div class="recommendations">
         <p class="big-number">14<small>차례</small></p>
-        <h3>유엔 조약기구의<br>차별금지법 제정 권고</h3>
+        <h3>차별금지법은 국제적 대세이기도 합니다.</h3>
         <p class="muted">2007년부터 유엔 조약기구가 한국 정부에 차별금지법 제정을 권고한 횟수</p>
         {DOTS}
         <p class="caption">원 하나 = 권고 한 차례 · 원고 수치로 그린 예시이며, 공개 전 권고문 목록·집계 기준·기준일 확인이 필요합니다.</p>
@@ -569,14 +567,14 @@ index_body = f"""<section class="hero" aria-labelledby="hero-title">
     </div>
     {SURVEYS}
   </div>
-  <div class="section-foot"><a class="text-link" href="why.html">필요한 이유와 근거 살펴보기 →</a></div>
+  <div class="section-foot"><a class="text-link" href="why.html">더 알아보기 →</a></div>
 </div></section>
 
 <section class="section" aria-labelledby="qa-title"><div class="wrap">
-  <p class="label">05 / 오해와 사실</p>
-  <h2 class="section-title" id="qa-title">궁금했던 질문을<br>하나씩 살펴봐요</h2>
-  <div class="qa-list-simple section-content">{qa_simple}</div>
-  <div class="section-foot"><a class="btn purple" href="qna.html">질문 {len(QA)}개 모두 보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+  <p class="label">05 / 질문</p>
+  <h2 class="section-title" id="qa-title">차별금지법에 관해 자주 하는 질문들을<br>차근차근 살펴봐요.</h2>
+  <div class="qa-list-simple section-content">{qna_list}</div>
+  <div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div></section>
 
 <section class="section pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">
@@ -585,17 +583,17 @@ index_body = f"""<section class="hero" aria-labelledby="hero-title">
   <div class="join">
     <article class="join-path">
       <h3>알리기</h3>
-      <p>주변에 차별금지법을 알려주세요. 평등을 향한 이야기를 함께 나눠요.</p>
-      <div class="actions"><a class="btn purple small" href="{LINKS['leaflet']}" {EXT}>리플렛 신청하기 ↗</a><button class="btn small" type="button" data-share hidden>사이트 링크 공유</button></div>
+      <p>차별금지법이 있는 나라를 하루라도 앞당기고 싶다면, 주변에 차별금지법을 알려주세요.</p>
+      <div class="actions"><a class="btn purple small" href="{LINKS['leaflet']}" {EXT}>&lt;당신에게 차별금지법을 선물합니다&gt; 리플렛 신청하기 ↗</a><button class="btn small" type="button" data-share hidden>사이트 링크 공유</button></div>
     </article>
     <article class="join-path">
       <h3>소식 받기</h3>
-      <p>반차별 활동 소식과, 한국사회의 평등 지수를 끌어올리는 월간평등UP을 만나보세요.</p>
-      <div class="actions"><a class="btn purple small" href="{LINKS['newsletter']}" {EXT}>뉴스레터 구독 ↗</a></div>
+      <p>차별금지법 제정과 반차별 활동 소식이 궁금하다면? 매월 한국사회의 평등 지수를 끌어올리는 월간평등UP을 구독하세요.</p>
+      <div class="actions"><a class="btn purple small" href="{LINKS['newsletter']}" {EXT}>월간평등UP 구독하기 ↗</a></div>
     </article>
     <article class="join-path">
       <h3>힘 보태기</h3>
-      <p>차별금지법 제정 운동을 함께 이어가요.</p>
+      <p>차별금지법 제정 운동에 함께하고 싶다면?</p>
       <p class="account">우리은행 1006‒201‒507617<br>차별금지법제정연대</p>
       <div class="actions"><a class="btn purple small" href="{LINKS['donate']}" {EXT}>후원하기 ↗</a></div>
     </article>
