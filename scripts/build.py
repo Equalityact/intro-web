@@ -8,12 +8,13 @@ import sys
 from pathlib import Path
 
 OUT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(__file__).resolve().parent.parent / "public"
+OUT.mkdir(parents=True, exist_ok=True)
 
 PAGES = [
     ("about.html", "01", "차별금지법이란?", "차별금지법이 뭐야?"),
     ("scenes.html", "02", "일상의 변화", "차별금지법이 바꿀 우리 사회의 장면들"),
     ("why.html", "03", "필요한 이유", "차별금지법이 제정될 수밖에 없는 이유"),
-    ("qna.html", "04", "Q&A", "차별금지법에 관한 질문들"),
+    ("qna.html", "04", "오해와 사실", "차별금지법에 관한 질문들"),
     ("timeline.html", "05", "타임라인", "차별금지법 타임라인"),
     ("resources.html", "06", "자료", "더 보기"),
 ]
@@ -37,7 +38,7 @@ GROUNDS = ["성별", "장애", "질병", "나이", "출신국가", "출신민족
 
 def grounds_html():
     tags = "".join(f'<li class="ground">{g}</li>' for g in GROUNDS)
-    return (f'<ul class="grounds" aria-label="차별금지사유 {len(GROUNDS)}가지" style="list-style:none;margin:0">{tags}</ul>'
+    return (f'<ul class="grounds" aria-label="차별금지사유 {len(GROUNDS)}가지">{tags}</ul>'
             '<div class="all-of-us">나도, 당신도, 우리 모두</div>')
 
 
@@ -55,16 +56,14 @@ def layout(filename, title, description, body):
 <meta name="description" content="{description}">
 <meta property="og:title" content="{full_title}">
 <meta property="og:description" content="{description}">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hahmlet:wght@500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap">
+<meta name="theme-color" content="#7056BE">
 <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 <a class="skip" href="#main">본문으로 바로가기</a>
 <header class="site-header">
   <div class="wrap">
-    <a class="wordmark" href="index.html">차별금지법이 뭐예요?</a>
+    <a class="wordmark" href="index.html">차별금지법<small>차별금지법제정연대</small></a>
     <button class="menu-toggle" type="button" aria-controls="gnb" aria-expanded="false">메뉴 열기</button>
     <nav class="gnb" id="gnb" aria-label="주요 메뉴"><ul>{nav}</ul></nav>
   </div>
@@ -98,8 +97,7 @@ def page_hero(num, short, title, lead, toc=None):
     if toc:
         items = "".join(f'<li><a href="#{i}">{t}</a></li>' for i, t in toc)
         toc_html = f'<ul class="page-toc" aria-label="이 페이지의 내용">{items}</ul>'
-    tone = {"01": "pink", "02": "yellow", "03": "purple", "04": "pink", "05": "yellow", "06": "purple"}[num]
-    return f"""<section class="page-hero tone-{tone}">
+    return f"""<section class="page-hero">
   <div class="wrap">
     <p class="eyebrow"><b>{num}</b>{short}</p>
     <h1>{title}</h1>
@@ -173,27 +171,27 @@ about_body = page_hero(
 
 # ---------------------------------------------------------------- 02 scenes
 SCENES = [
-    ("work", "일할 때", "고용 영역", "pink", "일터", [
+    ("work", "일할 때", "고용 영역", "일터", [
         "페미니스트라는 이유로 괴롭힘 당하지 않는 일터",
         "이주노동자라는 이유로 임금 차별을 겪지 않는 일터",
         "성소수자가 자신을 드러내도 걱정 없이 일할 수 있는 일터",
         "아프다는 이유로 채용 거부를 당하지 않는 일터",
         "성별을 이유로 업무에서 배제되지 않는 일터",
         "육아휴직을 하고 돌아와도 업무가 보장되는 일터"]),
-    ("school", "배울 때", "교육 영역", "purple", "학교", [
+    ("school", "배울 때", "교육 영역", "학교", [
         "성소수자 청소년도, 장애인 청소년도 있는 그대로 존중받고 배울 수 있는 학교",
         "혐오·차별·괴롭힘을 앞장서서 예방하는 학교",
         "트랜스젠더라는 이유로 수련회 참여가 제한되지 않는 학교",
         "차별·혐오 발언을 하는 학교장을 제지할 수 있는 학교",
         "다양한 가족 상황이 존중받는 학교"]),
-    ("service", "물건을 사거나<br>서비스를 이용할 때", "재화·용역 영역", "yellow", "일상", [
+    ("service", "물건을 사거나<br>서비스를 이용할 때", "재화·용역 영역", "일상", [
         "장애를 이유로 금융 거래가 제한되지 않는 은행",
         "감염인이라는 이유로 진료를 거부당하지 않는 병원",
         "노동조합 조끼를 입고 편하게 쇼핑할 수 있는 백화점",
         "피부색을 이유로 거부당하지 않는 목욕탕",
         "성소수자도 자유롭게 대관할 수 있는 체육관",
         "어린이를 환대하는 카페"]),
-    ("public", "행정서비스를<br>이용할 때", "행정서비스 영역", "white", "공공", [
+    ("public", "행정서비스를<br>이용할 때", "행정서비스 영역", "공공", [
         "성별·가족 관계 표기란이 다양하게 마련된 공공기관 문서",
         "수어·점자·음성 안내가 기본적으로 제공되는 민원 창구",
         "국적을 이유로 과도한 서류를 요구하지 않는 행정 절차",
@@ -201,10 +199,36 @@ SCENES = [
         "다양한 언어로 정확한 통역을 제공하는 법원과 경찰서",
         "휠체어로 접근할 수 있는 투표소"]),
 ]
+SCENE_EXAMPLES = {
+    "work": ("일터 · 채용", "아프다는 이유로\n채용을 거부당했다면", "아프다는 이유로\n채용 거부를 당하지 않는 일터", "질병", "고용"),
+    "school": ("학교 · 다양한 가족", "가족형태가 다르다는 이유로\n학교에서 배제됐다면", "다양한 가족 상황이\n존중받는 학교", "가족형태 및 가족상황", "교육"),
+    "service": ("은행 · 금융 거래", "장애를 이유로\n금융 거래가 제한됐다면", "장애를 이유로\n금융 거래가 제한되지 않는 은행", "장애", "재화·용역"),
+    "public": ("투표소 · 접근성", "휠체어로\n투표소에 들어갈 수 없다면", "휠체어로 접근할 수 있는\n투표소", "장애", "행정서비스"),
+}
+scene_buttons = "".join(
+    f'<button type="button" class="chip" data-scene="{sid}" aria-pressed="{str(i == 0).lower()}" aria-controls="scene-comparison">{name.replace("<br>", " ")}</button>'
+    for i, (sid, name, *_) in enumerate(SCENES)
+)
+# Keep all four examples as readable HTML; JavaScript progressively adds selection.
+scene_examples = ""
+for sid, (place, before, after, reason, area) in SCENE_EXAMPLES.items():
+    scene_examples += f"""<article class="scene-comparison" data-scene-panel="{sid}" aria-labelledby="compare-{sid}">
+  <h3 class="scene-place" id="compare-{sid}">{place}</h3>
+  <div class="comparison-grid"><div class="comparison-box"><h4>지금의 장벽</h4><p>{before}</p></div><span class="comparison-arrow" aria-hidden="true">→</span><div class="comparison-box after"><h4>바꾸려는 장면</h4><p>{after}</p></div></div>
+  <dl class="scene-axes"><div><dt>무엇을 이유로? · 차별금지사유</dt><dd>{reason}</dd></div><div><dt>어떤 영역에서? · 차별금지영역</dt><dd>{area}</dd></div></dl>
+</article>"""
+scene_comparison = f"""<section class="section" aria-labelledby="comparison-title"><div class="wrap">
+  <p class="label">일상의 변화 / 장벽과 변화</p>
+  <h2 class="section-title" id="comparison-title">내가 사는 일상에서는<br>무엇이 달라질까요?</h2>
+  <div class="scene-selector" role="group" aria-label="일상 장면 선택" hidden>{scene_buttons}</div>
+  <div id="scene-comparison">{scene_examples}</div>
+  <p class="caption">차별금지법이 지향하는 변화의 예시입니다. 사유와 영역은 사례를 이해하는 두 축이며, 차별 여부는 구체적 행위와 정당한 이유 등을 함께 살펴 판단합니다.</p>
+</div></section>"""
+
 areas_sections = ""
-for i, (sid, name, area, tone, place, items) in enumerate(SCENES, 1):
+for i, (sid, name, area, place, items) in enumerate(SCENES, 1):
     lis = "".join(f'<li class="scene-item"><span class="eq" aria-hidden="true">=</span><p>{s}</p></li>' for s in items)
-    areas_sections += f"""<section class="area" id="{sid}" data-tone="{tone}" aria-labelledby="{sid}-title">
+    areas_sections += f"""<section class="area" id="{sid}" aria-labelledby="{sid}-title">
   <div class="wrap">
     <div class="area-head"><div><span class="num">{i:02d} / {place}</span><h2 id="{sid}-title">{name}</h2></div><span class="tag">{area}</span></div>
     <ul class="scene-list">{lis}</ul>
@@ -215,21 +239,21 @@ scenes_body = page_hero(
     "02", "일상의 변화", "차별금지법이 바꿀<br>우리 사회의 장면들",
     "차별금지법이 생기면 우리 삶은 어떻게 달라질까요?<br>일터, 학교, 일상, 공공에서 일어날 평등을 향한 변화를 만나보세요.",
     [(sid, name.replace("<br>", " ")) for sid, name, *_rest in SCENES]
-) + areas_sections + """<section class="section soft"><div class="wrap">
-  <p class="caption" style="margin:0">차별금지법이 지향하는 변화의 예시입니다. 차별 여부는 구체적 행위와 정당한 이유 등을 함께 살펴 판단합니다.</p>
+) + scene_comparison + areas_sections + """<section class="section soft"><div class="wrap">
+  <p class="caption">차별금지법이 지향하는 변화의 예시입니다. 차별 여부는 구체적 행위와 정당한 이유 등을 함께 살펴 판단합니다.</p>
 </div></section>""" + pager("scenes.html")
 
 # ---------------------------------------------------------------- 03 why
 SURVEYS = """<div class="survey">
   <h3>차별금지법 제정 찬성</h3>
   <div class="rate-row">
-    <div class="rate-label"><span>한국갤럽 · 2026년 상반기</span><strong>55%</strong></div>
+    <div class="rate-label"><span>한국갤럽 · 2026년 3~4월</span><strong>55%</strong></div>
     <div class="rate-track" role="img" aria-label="한국갤럽 조사 제정 찬성 55퍼센트"><div class="rate-fill" style="--value:55%"></div></div>
     <div class="scale"><span>0%</span><span>100%</span></div>
     <a class="rate-source" href="https://www.gallup.co.kr/gallupdb/reportContent.asp?seqNo=1632" target="_blank" rel="noopener noreferrer">조사 2026.3.31~4.2 · 1,001명 · 한국갤럽 원문 ↗</a>
   </div>
   <div class="rate-row">
-    <div class="rate-label"><span>한국리서치 여론속의여론 · 2026년</span><strong>51%</strong></div>
+    <div class="rate-label"><span>한국리서치 · 2026년 5월</span><strong>51%</strong></div>
     <div class="rate-track" role="img" aria-label="한국리서치 조사 제정 찬성 51퍼센트"><div class="rate-fill" style="--value:51%"></div></div>
     <div class="scale"><span>0%</span><span>100%</span></div>
     <span class="rate-source">조사 2026.5.22~26 · 1,000명 · 주간리포트 제393-2호 <em>(출처 링크 확인 필요)</em></span>
@@ -255,14 +279,14 @@ why_body = page_hero(
       <h2 class="section-title" id="citizens-title">많은 시민이<br>원하고 있어요.</h2>
       <div class="reading">
         <p>지난 윤석열퇴진광장에서 시민들이 꼽았던 사회대개혁 과제 1위는 <strong>차별금지·성평등·인권·소수자 권리 보장</strong>이었어요. 여기에는 포괄적 차별금지법도 포함됩니다.</p>
-        <p style="margin-top:20px">지난 10년 동안 여러 기관의 여론 조사에서 차별금지법 제정에 찬성하는 비율은 55%부터 많게는 90%까지 나왔어요. 특히 갈수록 혐오와 관련한 사회적 사건들이 발생하면서 차별에 대한 감각과 평등을 향한 열망이 ‘차별금지법 제정’ 요구로 이어지고 있어요.</p>
+        <p>여러 기관의 여론 조사에서 과반이 차별금지법 제정에 찬성했어요. 조사마다 질문과 시점, 조사 방식이 달라 각 결과를 구분해 살펴봐야 합니다. 특히 갈수록 혐오와 관련한 사회적 사건들이 발생하면서 차별에 대한 감각과 평등을 향한 열망이 ‘차별금지법 제정’ 요구로 이어지고 있어요.</p>
       </div>
     </div>
     {SURVEYS}
   </div>
 </div></section>
-<section class="section tone-yellow-soft" id="religion" aria-labelledby="religion-title"><div class="wrap">
-  <div class="block" style="padding:0;border:0">
+<section class="section soft" id="religion" aria-labelledby="religion-title"><div class="wrap">
+  <div class="block">
     <div class="block-head"><span class="num">02 / 종교계</span><h2 id="religion-title">일부 종교계의 반대,<br>어떻게 볼까요?</h2></div>
     <div class="block-body">
       <p>흔히 차별금지법이 가로막힌 가장 큰 이유를 보수 개신교의 반대 때문이라고 생각합니다. 그러나 종교인 중 개신교인의 비율은 30% 내외이고, 개신교인 모두가 차별금지법에 반대하는 것도 아니에요. 일부 강하게 반대하는 목소리가 있는 건 사실이지만, 그 의견이 종교인 다수를 대표한다고 볼 수는 없습니다.</p>
@@ -278,16 +302,16 @@ why_body = page_hero(
       <p class="label">03 / 국제사회</p>
       <h2 class="section-title" id="global-title">차별금지법은<br>국제적 대세입니다.</h2>
       <p class="big-number">14<small>차례</small></p>
-      <p class="muted" style="margin-top:8px">2007년부터 유엔 조약기구가 한국 정부에 차별금지법 제정을 권고한 횟수</p>
+      <p class="muted">2007년부터 유엔 조약기구가 한국 정부에 차별금지법 제정을 권고한 횟수</p>
       {DOTS}
-      <p class="caption" style="margin-top:0">원 하나 = 권고 한 차례 · 공개 전 권고문 목록·집계 기준·기준일 확인 필요</p>
+      <p class="caption">원 하나 = 권고 한 차례 · 공개 전 권고문 목록·집계 기준·기준일 확인 필요</p>
     </div>
     <div class="reading">
       <p>한국은 차별금지법을 제정해야 합니다. 이것은 국내의 이야기만이 아니에요. 2007년 유엔 인종차별철폐위원회를 시작으로 여성차별철폐위원회, 아동권리위원회 등의 유엔 조약기구가 무려 <strong>14차례</strong>나 한국 정부에 포괄적 차별금지법 제정을 권고했어요.</p>
-      <p style="margin-top:20px">한국 정부의 답은 한결같았고요. “이에 대한 사회적 합의가 되지 않았다.”는 것이었습니다.</p>
-      <div class="callout" style="margin-top:32px">
+      <p>한국 정부의 답은 한결같았고요. “이에 대한 사회적 합의가 되지 않았다.”는 것이었습니다.</p>
+      <div class="callout">
         <p class="callout-title">여러분은 어떻게 생각하세요?<br>사회적 합의는 여전히 ‘아직’일까요?<br>언제까지 ‘나중에’여야 할까요?</p>
-        <p style="margin-top:16px">시민들은 꾸준히 과반의 찬성과 지지를 보내고 있습니다. 정치의 결단만 있다면 차별금지법 제정, 해낼 수 있어요.</p>
+        <p>시민들은 꾸준히 과반의 찬성과 지지를 보내고 있습니다. 정치의 결단만 있다면 차별금지법 제정, 해낼 수 있어요.</p>
       </div>
     </div>
   </div>
@@ -326,20 +350,23 @@ QA = [
 ]
 
 
-def qa_item(i, q, summary, detail=None):
-    detail_html = f'<div class="q-detail"><strong>자세한 답변</strong><p>{detail}</p></div>' if detail else ""
-    tag = "details" if detail else "a"
+def qa_item(i, question, summary, detail=None):
     if detail:
-        return f"""<details class="qa" id="q{i}"><summary><span class="q-number">Q{i}</span><span class="q-copy"><span class="q-title">{q}</span><span class="q-preview">{summary}</span></span><span class="q-toggle" aria-hidden="true"></span></summary>{detail_html}</details>"""
-    return f"""<details class="qa"><summary><span class="q-number">Q{i}</span><span class="q-copy"><span class="q-title">{q}</span></span><span class="q-toggle" aria-hidden="true"></span></summary><div class="q-detail"><p>{summary}</p><p style="margin-top:10px"><a class="text-link" href="qna.html#q{i}">자세한 답변 보기 →</a></p></div></details>"""
+        content = f'<p class="detail-label">자세한 답변</p><p>{detail}</p>'
+    else:
+        content = f'<p><a class="text-link" href="qna.html#q{i}">자세한 답변과 설명 보기 →</a></p>'
+    return f"""<details class="qa" id="q{i}">
+  <summary><span class="q-number">Q{i}</span><span class="q-copy"><span class="q-title">{question}</span><span class="q-preview">{summary}</span></span><span class="q-toggle" aria-hidden="true"></span></summary>
+  <div class="q-detail">{content}</div>
+</details>"""
 
 
 qna_list = "\n".join(qa_item(i, q, s, d) for i, (q, s, d) in enumerate(QA, 1))
 qna_body = page_hero(
-    "04", "Q&A", "차별금지법에<br>관한 질문들",
+    "04", "오해와 사실", "차별금지법에<br>관한 질문들",
     "차별금지법에 관해 자주 하는 질문들을 차근차근 살펴봐요. 답의 요지를 먼저 읽고, 더 궁금하면 펼쳐 보세요."
 ) + f"""<section class="section"><div class="wrap">
-  <div class="faq-toolbar">
+  <div class="faq-toolbar" hidden>
     <div class="field"><label for="faq-search">질문 검색</label><input type="search" id="faq-search" placeholder="예: 표현, 여대, 학력" aria-controls="faq-list" aria-describedby="faq-count"></div>
     <button type="button" class="btn small" id="faq-expand" aria-controls="faq-list" aria-expanded="false">모두 펼치기 <span aria-hidden="true">+</span></button>
   </div>
@@ -363,13 +390,13 @@ TIMELINE = [
         ("2006", "국가인권위원회", "권고", "국무총리에 「차별금지법안」 권고",
          "이를 위해 국가인권위원회가 2003년 차별금지법제정추진위원회를 구성해 법안 연구를 시작했고, 2006년 국무총리에게 「차별금지법안」을 권고했습니다.", False),
         ("2007", "법무부", "입법", "7개 차별금지사유 삭제한 「차별금지법안」 발의와 그에 대한 비판",
-         "정부는 2007년 10월 2일 국가인권위원회 권고법안을 토대로 한 「차별금지법안」을 입법예고하였으나, 두 달 후인 2007년 12월 12일 입법예고안에 존재했던 7개의 차별금지사유(병력, 출신국가, 언어, 가족형태 또는 가족상황, 범죄 및 보호처분의 전력, 성적 지향, 학력)를 삭제한 형태의 「차별금지법안」(정부안)을 발의했습니다.</p><p style=\"margin-top:12px\">인권시민사회는 일부 종교계나 재계의 반대가 있다는 이유로 차별금지사유를 삭제한 정부법안은 ‘차별을 조장하는 차별금지법’이라는 비판을 하면서 ‘차별금지법의 올바른 제정을 위한 반차별공동행동(준)’을 결성하고 정부법안에 대항하는 「차별금지법안」(노회찬 의원 대표발의)을 발의시켰습니다. 2008년 5월, 17대 국회가 임기만료하면서 두 법안은 자동폐기되었습니다.", True),
+         "정부는 2007년 10월 2일 국가인권위원회 권고법안을 토대로 한 「차별금지법안」을 입법예고하였으나, 두 달 후인 2007년 12월 12일 입법예고안에 존재했던 7개의 차별금지사유(병력, 출신국가, 언어, 가족형태 또는 가족상황, 범죄 및 보호처분의 전력, 성적 지향, 학력)를 삭제한 형태의 「차별금지법안」(정부안)을 발의했습니다.</p><p>인권시민사회는 일부 종교계나 재계의 반대가 있다는 이유로 차별금지사유를 삭제한 정부법안은 ‘차별을 조장하는 차별금지법’이라는 비판을 하면서 ‘차별금지법의 올바른 제정을 위한 반차별공동행동(준)’을 결성하고 정부법안에 대항하는 「차별금지법안」(노회찬 의원 대표발의)을 발의시켰습니다. 2008년 5월, 17대 국회가 임기만료하면서 두 법안은 자동폐기되었습니다.", True),
     ]),
     ("p18", "18·19대 국회", "2008~2016", [
         ("2008~2016", "정부·국회", "입법", "꾸준히 이어진 차별금지법안 논의와 발의",
-         "18대 국회 이후 차별금지법 제정을 위한 노력은 정부와 국회에서 형식적으로나마 꾸준히 이어졌습니다. 이명박 정부(2008~2013)는 법무부 산하에 ‘차별금지법TF’ 및 ‘차별금지법 특별분과위원회’를 구성·운영하며 법안을 논의하였고, 박근혜 정부(2013~2017) 또한 ‘사회통합적 인권체계 구축’을 위한 국정과제로 차별금지법 제정을 채택하고 ‘차별금지법 제정추진단’을 운영하며 법안 논의를 진행했습니다.</p><p style=\"margin-top:12px\">18대 국회에서 「차별금지기본법안」(박은수 의원 대표발의), 「차별금지법안」(권영길 의원 대표발의) 등 2개 법안이 발의되었고, 19대 국회에서 「차별금지법안」(김재연 의원 대표발의), 「차별금지법안」(김한길 의원 대표발의), 「차별금지법안」(최원식 의원 대표발의) 등 3개 법안이 발의되었습니다.", False),
+         "18대 국회 이후 차별금지법 제정을 위한 노력은 정부와 국회에서 형식적으로나마 꾸준히 이어졌습니다. 이명박 정부(2008~2013)는 법무부 산하에 ‘차별금지법TF’ 및 ‘차별금지법 특별분과위원회’를 구성·운영하며 법안을 논의하였고, 박근혜 정부(2013~2017) 또한 ‘사회통합적 인권체계 구축’을 위한 국정과제로 차별금지법 제정을 채택하고 ‘차별금지법 제정추진단’을 운영하며 법안 논의를 진행했습니다.</p><p>18대 국회에서 「차별금지기본법안」(박은수 의원 대표발의), 「차별금지법안」(권영길 의원 대표발의) 등 2개 법안이 발의되었고, 19대 국회에서 「차별금지법안」(김재연 의원 대표발의), 「차별금지법안」(김한길 의원 대표발의), 「차별금지법안」(최원식 의원 대표발의) 등 3개 법안이 발의되었습니다.", False),
         ("2013", "김한길·최원식 의원", "철회", "「차별금지법안」 철회 사태와 인권 제도의 후퇴",
-         "꾸준히 이어지던 차별금지법 제정 시도 흐름에 제동을 건 것은 2013년 법안 철회 사태였습니다. 2013년 4월 24일 김한길 의원과 최원식 의원은 보수개신교계의 항의 등이 거세다는 이유로 법안 발의 2개월 만에 차별금지법안을 각각 철회했습니다.</p><p style=\"margin-top:12px\">2012년 출범한 차별금지법제정연대 등 인권시민사회는 법안이 실제로 철회되는 경우 “보수기독교 세력이 국회의 입법 활동을 저지하거나 개악할 수 있다는 것을 증명하는 초유의 사례가 될 것”이라고 우려하며 철회 중단을 요구하였으나 철회는 강행되었습니다. 인권시민사회의 경고대로 2013년 법안 철회 사태는 극우적 주장을 결집시켜 인권 법·정책을 가로막은 최초의 성공사례가 되었고 이후 지역인권조례 등 한국의 각종 인권 제도가 동일한 방식으로 막히거나 후퇴되기 시작하였습니다.", True),
+         "꾸준히 이어지던 차별금지법 제정 시도 흐름에 제동을 건 것은 2013년 법안 철회 사태였습니다. 2013년 4월 24일 김한길 의원과 최원식 의원은 보수개신교계의 항의 등이 거세다는 이유로 법안 발의 2개월 만에 차별금지법안을 각각 철회했습니다.</p><p>2012년 출범한 차별금지법제정연대 등 인권시민사회는 법안이 실제로 철회되는 경우 “보수기독교 세력이 국회의 입법 활동을 저지하거나 개악할 수 있다는 것을 증명하는 초유의 사례가 될 것”이라고 우려하며 철회 중단을 요구하였으나 철회는 강행되었습니다. 인권시민사회의 경고대로 2013년 법안 철회 사태는 극우적 주장을 결집시켜 인권 법·정책을 가로막은 최초의 성공사례가 되었고 이후 지역인권조례 등 한국의 각종 인권 제도가 동일한 방식으로 막히거나 후퇴되기 시작하였습니다.", True),
     ]),
     ("p20", "20대 국회", "2016~2020", [
         ("2016~2020", "국회", "입법", "법안 발의조차 하지 못한 첫 국회",
@@ -378,7 +405,7 @@ TIMELINE = [
     ("p21", "21대 국회", "2020~2024", [
         ("2020", "국가인권위원회", "권고", "「평등 및 차별금지에 관한 법률」 제정 의견표명", "", False),
         ("2020~2021", "국회 · 시민", "시민 행동", "4개의 법안 발의와 10만 명 시민들의 국민동의청원",
-         "긴 침묵이 깨진 것은 21대 국회가 시작된 2020년 6월이었습니다. 2020년 6월 29일 「차별금지법안」(장혜영 의원 대표발의)이 발의되었고, 그 다음 날인 6월 30일 국가인권위원회가 국회에 「평등 및 차별금지에 관한 법률」을 제정하라는 의견표명을 했습니다.</p><p style=\"margin-top:12px\">약 1년 뒤인 2021년 6월 14일 10만인의 시민들이 국민동의청원안인 「차별금지법 제정에 관한 청원」을 국회에 접수하였고, 이어 「평등에 관한 법률안」(이상민 의원 대표발의), 「평등에 관한 법률안」(박주민 의원 대표발의), 「평등 및 차별금지에 관한 법률안」(권인숙 의원 대표발의)이 연속으로 발의되었습니다.", True),
+         "긴 침묵이 깨진 것은 21대 국회가 시작된 2020년 6월이었습니다. 2020년 6월 29일 「차별금지법안」(장혜영 의원 대표발의)이 발의되었고, 그 다음 날인 6월 30일 국가인권위원회가 국회에 「평등 및 차별금지에 관한 법률」을 제정하라는 의견표명을 했습니다.</p><p>약 1년 뒤인 2021년 6월 14일 10만인의 시민들이 국민동의청원안인 「차별금지법 제정에 관한 청원」을 국회에 접수하였고, 이어 「평등에 관한 법률안」(이상민 의원 대표발의), 「평등에 관한 법률안」(박주민 의원 대표발의), 「평등 및 차별금지에 관한 법률안」(권인숙 의원 대표발의)이 연속으로 발의되었습니다.", True),
         ("2021~2022", "인권시민사회 · 국회", "시민 행동", "법 제정을 촉구하는 단식농성과 공청회",
          "인권시민사회는 10만 국민동의청원 성사 이후 30일 간의 전국도보행진, 46일 간의 단식농성을 이어가며 국회 논의와 법 제정을 촉구하였습니다. 2022년 5월 25일 국회 법제사법위원회 제1소위원회가 ‘차별금지법(평등에 관한 법률) 제정 관련 공청회’를 개최하였으나 21대 국회에서 논의는 더 나아가지 못했습니다. 4개의 발의법안 및 국민동의청원안은 21대 국회 임기만료로 자동폐기되기에 이르렀습니다.", False),
     ]),
@@ -393,21 +420,31 @@ for i, (pid, name, years, items) in enumerate(TIMELINE):
     for date, actor, kind, title, desc, featured in items:
         desc_html = f"<p>{desc}</p>" if desc else ""
         cls = "timeline-item featured" if featured else "timeline-item"
-        lis += f"""<li class="{cls}"><article class="timeline-card">
-  <div class="timeline-meta"><time>{date}</time><span>{actor}</span><span class="timeline-kind">{kind}</span></div>
+        category = "입법" if kind == "철회" else kind
+        date_html = f'<time datetime="{date}">{date}</time>' if re.fullmatch(r"[0-9]{4}", date) else f'<span>{date}</span>'
+        lis += f"""<li class="{cls}" data-kind="{category}"><article class="timeline-card">
+  <div class="timeline-meta">{date_html}<span>{actor}</span><span class="timeline-kind">{kind}</span></div>
   <h3>{title}</h3>{desc_html}
 </article></li>"""
-    extra = '<p class="source muted" style="font-size:13px;margin-top:16px">기준일 2026.10.21 · 새 소식이 생기면 이 구간에 항목을 추가합니다.</p>' if pid == "p22" else ""
     periods += f"""<section class="period" id="{pid}" aria-labelledby="{pid}-title">
-  <div class="period-head"><span class="num">{i:02d}</span><h2 id="{pid}-title">{name}</h2><span class="years">{years}</span></div>
-  <div><ol class="timeline">{lis}</ol>{extra}</div>
+  <div class="period-head"><span class="num">{i + 1:02d}</span><h2 id="{pid}-title">{name}</h2><span class="years">{years}</span></div>
+  <ol class="timeline">{lis}</ol>
 </section>
 """
+timeline_filters = "".join(
+    f'<button class="chip" type="button" data-timeline="{value}" aria-pressed="{str(value == "all").lower()}" aria-controls="timeline-periods">{label}</button>'
+    for value, label in [("all", "전체"), ("입법", "입법"), ("권고", "권고"), ("시민 행동", "시민 행동"), ("정부", "정부")]
+)
+timeline_count = sum(len(items) for *_, items in TIMELINE)
 timeline_body = page_hero(
     "05", "타임라인", "차별금지법<br>타임라인",
     "평등을 위한 요구는 20년 넘게 이어져 왔어요. 사회적 논의의 시작부터 22대 국회까지, 입법의 경로를 따라가 봐요.",
     [(pid, name) for pid, name, *_ in TIMELINE]
-) + f'<section class="section"><div class="wrap">{periods}</div></section>' + pager("timeline.html")
+) + f"""<section class="section"><div class="wrap">
+  <div class="timeline-toolbar"><div class="chip-row" id="timeline-filters" role="group" aria-label="사건 분류" hidden>{timeline_filters}</div><output id="timeline-count" aria-live="polite">사건 {timeline_count}개</output></div>
+  <div id="timeline-periods">{periods}</div>
+  <p class="timeline-source">입법 현황 기준일 2026.10.21 · 사건별 근거 자료는 확인 후 연결합니다.</p>
+</div></section>""" + pager("timeline.html")
 
 # ---------------------------------------------------------------- 06 resources
 RESOURCES = [
@@ -441,7 +478,7 @@ res_items = "".join(f"""<li class="resource">
   <h3>{title}</h3>
   <p class="by">{by}</p>
   <p>{desc}</p>
-  <a class="btn small" href="#" data-todo="link">자료 보기 <span aria-hidden="true">↗</span></a>
+  <p class="resource-status">자료 링크 준비 중</p>
 </li>""" for kind, year, title, by, desc in RESOURCES)
 
 resources_body = page_hero(
@@ -471,23 +508,22 @@ resources_body = page_hero(
 """ + pager("resources.html")
 
 # ---------------------------------------------------------------- index
-scene_cards = "".join(f"""<a class="scene-card {cls}" href="scenes.html#{sid}">
-  <div class="scene-top"><span class="scene-index">{i:02d} / {place}</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>
-  <h3>{name}</h3><p>{items[0]}</p>
-  <span class="scene-link">장면 살펴보기 <span class="arrow" aria-hidden="true">→</span></span>
-</a>""" for i, ((sid, name, _a, _t, place, items), cls, glyph) in enumerate(
-    zip(SCENES, ["pink", "purple-bg", "yellow", "white"], ["[ ]", "?", "↔", "="]), 1))
-qa_simple = "\n".join(qa_item(i, q, s) for i, (q, s, _d) in enumerate(QA, 1))
+scene_cards = "".join(f"""<a class="scene-card" href="scenes.html#{sid}">
+  <div class="scene-top"><span class="scene-index">{i:02d} / EVERYDAY</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>
+  <h3>{name}</h3><p>{SCENE_EXAMPLES[sid][2].replace(chr(10), ' ')}</p>
+  <span class="scene-link">일상 장면 살펴보기 <span class="arrow" aria-hidden="true">→</span></span>
+</a>""" for i, ((sid, name, *_), glyph) in enumerate(zip(SCENES, ["[ ]", "?", "↔", "="]), 1))
+qa_simple = "\n".join(qa_item(i, q, summary) for i, (q, summary, _) in enumerate(QA, 1) if i in (2, 8, 9))
 
 index_body = f"""<section class="hero" aria-labelledby="hero-title">
   <div class="wrap hero-grid">
     <div>
-      <p class="overline">차별금지법 한눈에 보기</p>
+      <p class="overline">차별금지법, 함께 알아보기</p>
       <h1 id="hero-title">차별금지법,<br>모두를 위한<br><mark>평등의 기준</mark></h1>
-      <p>우리의 일상이 조금씩 더 평등해지도록,<br>차별금지법 제정부터 시작해요!</p>
-      <div class="actions"><a class="btn purple large" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark large" href="qna.html">질문 살펴보기</a></div>
+      <p class="hero-lead">우리의 일상이 조금씩 더 평등해지도록,<br>차별금지법 제정부터 시작해요!</p>
+      <div class="actions"><a class="btn purple" href="about.html">법 알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">오해 문답 보기 <span class="arrow" aria-hidden="true">→</span></a></div>
     </div>
-    <div class="shape-panel"><small>혼자 남겨두지 않겠다는 약속</small><span class="eq" aria-hidden="true">=</span><p class="caption">차별 없는 사회,<br>함께 시작해요.</p></div>
+    <div class="shape-panel"><small>혼자 남겨두지 않겠다는 약속</small><span class="eq" aria-hidden="true">=</span><p class="shape-caption">차별 없는 사회,<br>함께 시작해요.</p></div>
   </div>
 </section>
 
@@ -495,83 +531,73 @@ index_body = f"""<section class="hero" aria-labelledby="hero-title">
   <p class="label">01 / 차별금지법 3줄 요약</p>
   <h2 class="section-title" id="summary-title">차별금지법은<br><span class="mark">어떤 일을 하는 법</span>일까요?</h2>
   <div class="pillars">
-    <article class="pillar"><div class="role">기준</div><h3>평등의 기준을<br>세우는 법</h3><p>차별금지법은 차별이 무엇인지 정하고, 차별을 포괄적으로 막고 예방합니다.</p></article>
-    <article class="pillar"><div class="role">곁</div><h3>차별에 맞서는<br>용기를 돕는 법</h3><p>차별금지법은 차별에 맞서는 사람의 곁에 서서, 용기 있는 대응과 일상의 회복을 만듭니다.</p></article>
-    <article class="pillar"><div class="role">책임</div><h3>차별 없는 사회,<br>국가가 만들어야 합니다</h3><p>차별금지법은 차별을 없애고 예방할 책임이 국가에 있음을 분명히 합니다.</p></article>
+    <article class="pillar"><div class="role">기준</div><h3>평등의 기준을<br>세우는 법</h3><p>차별이 무엇인지 정하고,<br>차별을 막고 예방합니다.</p></article>
+    <article class="pillar"><div class="role">곁</div><h3>차별에 맞서는<br>용기를 돕는 법</h3><p>차별에 맞서는 사람의 곁에서<br>대응과 일상의 회복을 돕습니다.</p></article>
+    <article class="pillar"><div class="role">책임</div><h3>차별 없는 사회,<br>국가의 책임</h3><p>차별을 없애고 예방할 책임이<br>국가에 있음을 분명히 합니다.</p></article>
   </div>
+  <div class="all-of-us">우리의 일상이 조금씩 더 평등해지도록</div>
 </div></section>
 
-<section class="section tone-purple-soft" aria-labelledby="grounds-title"><div class="wrap">
+<section class="section soft" aria-labelledby="grounds-title"><div class="wrap">
   <p class="label">02 / 차별금지사유</p>
   <h2 class="section-title" id="grounds-title">누구도 혼자<br>남겨두지 않는 법</h2>
-  <p class="section-intro" style="margin-bottom:32px">어떠한 이유로도 차별받지 않도록, 차별금지법은 누구도 혼자 남겨두지 않겠다는 평등의 약속입니다.</p>
+  <p class="section-intro">어떤 이유로 차별받았나요?<br>차별을 금지하는 이유를 ‘차별금지사유’라고 해요.</p>
   {grounds_html()}
-  <div class="section-foot"><a class="btn" href="about.html#grounds">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+  <p class="caption">누구나 어떤 상황에서는 차별받는 소수자가 될 수 있어요.</p>
+  <div class="section-foot"><a class="text-link" href="about.html#grounds">차별금지사유 더 알아보기 →</a></div>
 </div></section>
 
 <section class="section" aria-labelledby="scenes-title"><div class="wrap">
-  <p class="label">03 / 일상의 변화</p>
+  <p class="label">03 / 우리의 일상</p>
   <h2 class="section-title" id="scenes-title">차별금지법이 바꿀<br>우리 사회의 장면들</h2>
   <div class="scene-grid">{scene_cards}</div>
-  <div class="section-foot"><a class="btn" href="scenes.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div></section>
 
-<section class="section tone-yellow" aria-labelledby="stats-title"><div class="wrap">
+<section class="section soft" aria-labelledby="stats-title"><div class="wrap">
   <p class="label">04 / 통계와 근거</p>
-  <h2 class="section-title" id="stats-title">차별금지법에 대한 사회적 합의는<br>여전히 ‘아직’일까요?</h2>
-  <div class="stat-hero" style="margin-top:40px">
+  <h2 class="section-title" id="stats-title">차별금지법 제정에<br>과반이 찬성했어요.</h2>
+  <div class="stat-hero section-content">
     <div>
-      <h3 style="font-size:26px;margin-bottom:12px">많은 시민이 차별금지법을 원하고 있어요.</h3>
-      <p class="muted">여러 기관의 여론 조사에서 과반이 차별금지법 제정에 찬성했어요.</p>
-      <div class="survey" style="margin-top:24px;padding:24px 28px">
+      <p class="reading">차별금지법을 향한 시민의 요구와 국제사회의 권고가 이어져 왔습니다. 조사별 질문과 시점, 근거를 함께 살펴봐요.</p>
+      <div class="recommendations">
         <p class="big-number">14<small>차례</small></p>
-        <p class="callout-title" style="margin-top:8px">차별금지법은 국제적 대세이기도 합니다.</p>
-        <p class="muted" style="font-size:15px;margin-top:6px">2007년부터 유엔 조약기구가 한국 정부에 차별금지법 제정을 권고한 횟수</p>
+        <h3>유엔 조약기구의<br>차별금지법 제정 권고</h3>
+        <p class="muted">2007년부터 유엔 조약기구가 한국 정부에 차별금지법 제정을 권고한 횟수</p>
         {DOTS}
+        <p class="caption">원 하나 = 권고 한 차례 · 원고 수치로 그린 예시이며, 공개 전 권고문 목록·집계 기준·기준일 확인이 필요합니다.</p>
       </div>
     </div>
     {SURVEYS}
   </div>
-  <div class="section-foot"><a class="btn" href="why.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+  <div class="section-foot"><a class="text-link" href="why.html">필요한 이유와 근거 살펴보기 →</a></div>
 </div></section>
 
 <section class="section" aria-labelledby="qa-title"><div class="wrap">
-  <p class="label">05 / 질문</p>
-  <h2 class="section-title" id="qa-title">자주 하는 질문들을<br>차근차근 살펴봐요</h2>
-  <div class="qa-list-simple" style="margin-top:32px">
-{qa_simple}
-  </div>
-  <div class="section-foot"><a class="btn" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+  <p class="label">05 / 오해와 사실</p>
+  <h2 class="section-title" id="qa-title">궁금했던 질문을<br>하나씩 살펴봐요</h2>
+  <div class="qa-list-simple section-content">{qa_simple}</div>
+  <div class="section-foot"><a class="btn purple" href="qna.html">질문 {len(QA)}개 모두 보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div></section>
 
-<section class="section tone-pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">
+<section class="section pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">
   <p class="label">06 / 함께하기</p>
-  <h2 class="section-title" id="join-title">지금 나에게 맞는 방식으로<br><span class="mark">함께해요.</span></h2>
+  <h2 class="section-title" id="join-title">지금 나에게 맞는 방식으로<br>함께해요.</h2>
   <div class="join">
     <article class="join-path">
       <h3>알리기</h3>
-      <p>차별금지법이 있는 나라를 하루라도 앞당기고 싶다면, 주변에 차별금지법을 알려주세요.</p>
-      <div class="actions" style="margin-top:auto">
-        <button class="btn purple small" type="button" data-share>사이트 링크 공유</button>
-        <a class="btn small" href="{LINKS['leaflet']}" {EXT}>&lt;당신에게 차별금지법을 선물합니다&gt; 리플렛 신청하기 <span aria-hidden="true">↗</span></a>
-      </div>
+      <p>주변에 차별금지법을 알려주세요. 평등을 향한 이야기를 함께 나눠요.</p>
+      <div class="actions"><a class="btn purple small" href="{LINKS['leaflet']}" {EXT}>리플렛 신청하기 ↗</a><button class="btn small" type="button" data-share hidden>사이트 링크 공유</button></div>
     </article>
     <article class="join-path">
       <h3>소식 받기</h3>
-      <p>차별금지법 제정과 반차별 활동 소식이 궁금하다면? 매월 한국사회의 평등 지수를 끌어올리는 <strong>월간평등UP</strong>을 구독하세요.</p>
-      <form class="subscribe" id="subscribe-form" action="{LINKS['newsletter']}" novalidate>
-        <div class="field"><label for="sub-name">이름</label><input id="sub-name" name="name" autocomplete="name"></div>
-        <div class="field"><label for="sub-email">이메일</label><input id="sub-email" name="email" type="email" autocomplete="email" required aria-describedby="sub-email-error"><p class="error" id="sub-email-error" hidden>이메일 주소를 확인해 주세요.</p></div>
-        <label class="check"><input type="checkbox" required> 개인정보 수집 및 이용 동의 (필수)</label>
-        <label class="check"><input type="checkbox" required> 광고성 정보 수신 동의 (필수)</label>
-        <button class="btn purple small" type="submit">구독하기</button>
-      </form>
+      <p>반차별 활동 소식과, 한국사회의 평등 지수를 끌어올리는 월간평등UP을 만나보세요.</p>
+      <div class="actions"><a class="btn purple small" href="{LINKS['newsletter']}" {EXT}>뉴스레터 구독 ↗</a></div>
     </article>
     <article class="join-path">
       <h3>힘 보태기</h3>
-      <p>차별금지법 제정 운동에 함께하고 싶다면?</p>
-      <p class="muted" style="font-size:14px">우리은행 1006‒201‒507617<br>차별금지법제정연대</p>
-      <a class="btn purple small" href="{LINKS['donate']}" {EXT}>후원하기 <span aria-hidden="true">↗</span></a>
+      <p>차별금지법 제정 운동을 함께 이어가요.</p>
+      <p class="account">우리은행 1006‒201‒507617<br>차별금지법제정연대</p>
+      <div class="actions"><a class="btn purple small" href="{LINKS['donate']}" {EXT}>후원하기 ↗</a></div>
     </article>
   </div>
 </div></section>"""

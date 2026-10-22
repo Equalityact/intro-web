@@ -6,7 +6,8 @@
   "scripts": {
     "generate": "python3 scripts/build.py",
     "dev": "live-server public --port=3000 --no-browser --middleware=$PWD/scripts/clean-urls.js",
-    "start": "live-server public --port=3000 --middleware=$PWD/scripts/clean-urls.js"
+    "start": "live-server public --port=3000 --middleware=$PWD/scripts/clean-urls.js",
+    "check": "python3 scripts/check.py"
   },
   "devDependencies": {
     "live-server": "^1.2.2"
