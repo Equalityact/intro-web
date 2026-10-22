@@ -26,6 +26,13 @@ def paragraphs(values, attrs=""):
     return "".join(prose("p", value, attrs) for value in values)
 
 
+def emphasised_paragraph(value, phrase):
+    before, match, after = value.partition(phrase)
+    if not match:
+        raise ValueError("Emphasis must match existing copy")
+    return f'<p data-manuscript>{h(before)}<strong>{h(match)}</strong>{h(after)}</p>'
+
+
 def external(url, label, classes=""):
     return f'<a href="{h(url)}" class="{classes}" {EXT}>{prose("span", label)} <span aria-hidden="true">↗</span></a>'
 
@@ -52,10 +59,10 @@ def linked_paragraphs(item):
     return result
 
 
-def page_hero(filename, lead=None, toc=()):
+def page_hero(filename, toc=()):
     _, number, short, title = next(page for page in PAGES if page[0] == filename)
     links = "".join(f'<li><a href="#{ident}">{prose("span", label)}</a></li>' for ident, label in toc)
-    lead_html = prose("p", lead, 'class="lead"') if lead else ""
+    lead_html = prose("p", COPY["page_introductions"][filename], 'class="lead"')
     toc_html = f'<ul class="page-toc" aria-label="이 페이지의 내용">{links}</ul>' if links else ""
     return f'''<section class="page-hero"><div class="wrap">
   <p class="eyebrow"><b aria-hidden="true">{number}</b>{prose("span", short)}</p>
@@ -79,6 +86,13 @@ def layout(filename, title, description, body):
         for name, _, short, _ in PAGES
     )
     site_title = HOME["name"] if filename == "index.html" else f'{title} · {HOME["name"]}'
+    section_menu = ""
+    if filename == "index.html":
+        section_links = "".join(f'<li><a href="#{ident}"><span aria-hidden="true">{index:02d}</span>{prose("span", label)}</a></li>' for index, (ident, label) in enumerate(HOME["section_navigation"], 1))
+        section_menu = f'''<nav class="section-jump" aria-label="메인 페이지 섹션">
+  <ol id="home-section-links">{section_links}</ol>
+  <button class="btn purple small section-jump-toggle" type="button" aria-controls="home-section-links" aria-expanded="true" hidden>섹션 이동 <span aria-hidden="true">⌃</span></button>
+</nav>'''
     return f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -99,6 +113,7 @@ def layout(filename, title, description, body):
   <nav class="gnb" id="gnb" aria-label="주요 메뉴"><ul>{navigation}</ul></nav>
 </div></header>
 <main id="main">{body}</main>
+{section_menu}
 <footer class="site-footer"><div class="wrap"><div class="footer-grid">
   {prose("p", HOME["name"], 'class="footer-name"')}
   <dl class="footer-info">
@@ -141,44 +156,87 @@ about_body = page_hero("about.html", toc=[(b["id"], b["title"]) for b in COPY["a
 about_body += f'<section class="section"><div class="wrap">{about_blocks}</div></section>' + pager("about.html")
 
 scene_sections = ""
+scene_tabs = ""
+comparison = COPY["scene_comparison"]
 for scene in COPY["scenes"]:
-    items = "".join(f'<li class="scene-item"><span class="eq" aria-hidden="true">=</span>{prose("p", value)}</li>' for value in scene["items"])
-    scene_sections += f'<section class="area" id="{scene["id"]}" aria-labelledby="{scene["id"]}-title"><div class="wrap">{prose("h2", scene["title"], f'class="section-title" id="{scene["id"]}-title"')}<ul class="scene-list">{items}</ul></div></section>'
-scenes_body = page_hero("scenes.html", COPY["scenes_intro"], [(s["id"], s["title"]) for s in COPY["scenes"]]) + scene_sections + pager("scenes.html")
+    sid = scene["id"]
+    scene_tabs += f'<button type="button" id="tab-{sid}" role="tab" aria-controls="{sid}" aria-selected="false" tabindex="-1">{prose("span", scene["title"])}</button>'
+    cards = ""
+    if len(scene["items"]) != len(scene["comparisons"]):
+        raise ValueError("Each manuscript scene needs one comparison")
+    for index, (after, example) in enumerate(zip(scene["items"], scene["comparisons"]), 1):
+        cards += f'''<article class="scene-comparison" aria-labelledby="compare-{sid}-{index}">
+  <div class="scene-place">{prose("h4", example["place"], f'id="compare-{sid}-{index}"')}<span aria-hidden="true">{index:02d} / {len(scene["items"]):02d}</span></div>
+  <div class="comparison-grid"><div class="comparison-box">{prose("h5", comparison["before_label"])}{prose("p", example["before"])}</div><span class="comparison-arrow" aria-hidden="true">→</span><div class="comparison-box after">{prose("h5", comparison["after_label"])}{prose("p", after)}</div></div>
+  <dl class="scene-axes"><div>{prose("dt", comparison["reason_label"])}<dd>{prose("span", example["reason"], 'class="tag"')}</dd></div><div>{prose("dt", comparison["area_label"])}<dd>{prose("span", scene["area"], 'class="tag"')}</dd></div></dl>
+</article>'''
+    scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{prose("h3", scene["title"], f'class="scene-area-title" id="{sid}-title"')}{cards}</section>'
+scenes_body = page_hero("scenes.html", [(s["id"], s["title"]) for s in COPY["scenes"]])
+scenes_body += f'''<section class="section" aria-labelledby="comparison-title"><div class="wrap">
+{prose("p", comparison["label"], 'class="eyebrow"')}{prose("h2", comparison["title"], 'class="section-title comparison-title" id="comparison-title"')}
+<div class="scene-selector" role="tablist" aria-label="일상 장면 선택" hidden>{scene_tabs}</div>
+<div class="scene-panels">{scene_sections}</div>{prose("p", comparison["caption"], 'class="caption comparison-caption"')}
+</div></section>''' + pager("scenes.html")
 
-survey_rows = ""
+survey_rows = []
 for value, institution, date, url in HOME["surveys"]:
     number = value.removesuffix("%")
-    survey_rows += f'''<div class="rate-row">
+    survey_rows.append(f'''<div class="rate-row">
   <div class="rate-label">{external(url, institution)}{prose("strong", value)}</div>
   <div class="rate-track" aria-hidden="true"><div class="rate-fill" style="--value:{number}%"></div></div>
   <div class="scale" aria-hidden="true"><span>0%</span><span>100%</span></div>
   {prose("p", date, 'class="rate-source"')}
-</div>'''
-surveys = f'<div class="survey">{prose("h3", HOME["source_label"])}{survey_rows}</div>'
+</div>''')
+
+
+def survey_card(label):
+    return f'<div class="survey">{prose("h3", label)}{"".join(survey_rows[:2])}<div class="survey-context">{survey_rows[2]}</div></div>'
+
+
+surveys = survey_card(HOME["source_label"])
+why_surveys = survey_card(COPY["why_source_label"])
 dots = '<div class="dots" aria-hidden="true">' + "<span></span>" * 14 + "</div>"
+
+
+def recommendation_card(include_title=True):
+    number = f'<p class="big-number" data-manuscript>{h(HOME["recommendation_value"].removesuffix("차례"))}<small>차례</small></p>'
+    title = prose("h3", HOME["recommendation_title"]) if include_title else ""
+    caption = prose("p", HOME["recommendation_caption"], 'class="muted"')
+    return f'<div class="recommendations">{number}{title}{caption}{dots}</div>'
+
+
 why_sections = ""
 for index, block in enumerate(COPY["why"]):
     title = prose("h2", block["title"], f'class="section-title" id="{block["id"]}-title"')
     body = f'<div class="reading">{paragraphs(block["paragraphs"])}</div>'
     if index == 0:
-        body = f'<div class="stat-hero"><div>{title}{body}</div>{surveys}</div>'
+        citizen_paragraphs = emphasised_paragraph(block["paragraphs"][0], block["emphasis"]) + paragraphs(block["paragraphs"][1:])
+        body = f'<div class="stat-hero"><div><p class="eyebrow"><b aria-hidden="true">01</b>{prose("span", block["label"])}</p>{title}<div class="reading">{citizen_paragraphs}</div></div>{why_surveys}</div>'
+    elif index == 1:
+        callout = f'<div class="callout purple visual">{prose("strong", block["callout"]["title"])}{prose("p", block["callout"]["body"])}</div>'
+        body = f'''<div class="block"><div class="block-head"><p class="eyebrow"><b aria-hidden="true">02</b>{prose("span", block["label"])}</p>{title}</div>
+<div class="block-body">{prose("p", block["paragraphs"][0])}{callout}{prose("p", block["paragraphs"][1])}<p><a class="text-link" href="qna.html#q1">{prose("span", block["question_link"])}</a></p></div></div>'''
     elif index == 2:
-        body = title + body + f'<div class="callout section-content">{prose("p", COPY["why_closing"])}</div>'
+        closing = COPY["why_closing"]
+        global_paragraphs = emphasised_paragraph(block["paragraphs"][0], block["emphasis"]) + paragraphs(block["paragraphs"][1:])
+        body = f'''<div class="stat-hero"><div><p class="eyebrow"><b aria-hidden="true">03</b>{prose("span", block["label"])}</p>{title}{recommendation_card(False)}</div>
+<div class="reading">{global_paragraphs}<div class="callout section-content">{prose("p", closing["title"], 'class="callout-title"')}{prose("p", closing["body"])}</div></div></div>'''
     else:
         body = title + body
     why_sections += f'<section class="section{" soft" if index == 1 else ""}" id="{block["id"]}" aria-labelledby="{block["id"]}-title"><div class="wrap">{body}</div></section>'
 why_body = page_hero("why.html", toc=[(b["id"], b["title"]) for b in COPY["why"]]) + why_sections + pager("why.html")
 
 
-def qa_item(index, question):
+def qa_item(index, question, preview=True):
+    summary = prose("span", question["summary"], 'class="q-preview"') if preview else ""
     return f'''<details class="qa" id="q{index}">
-  <summary><span class="q-number" aria-hidden="true">Q{index}</span><span class="q-copy">{prose("span", question["question"], 'class="q-title"')}{prose("span", question["summary"], 'class="q-preview"')}</span><span class="q-toggle" aria-hidden="true"></span></summary>
+  <summary><span class="q-number" aria-hidden="true">Q{index}</span><span class="q-copy">{prose("span", question["question"], 'class="q-title"')}{summary}</span><span class="q-toggle" aria-hidden="true"></span></summary>
   <div class="q-detail"><p class="detail-label">자세한 답변</p>{prose("p", question["answer"])}</div>
 </details>'''
 
 
 question_list = "".join(qa_item(index, question) for index, question in enumerate(COPY["questions"], 1))
+home_questions = "".join(qa_item(index, question, preview=False) for index, question in enumerate(COPY["questions"][:4], 1))
 qna_body = page_hero("qna.html") + f'''<section class="section"><div class="wrap">
   <div class="faq-toolbar" hidden><div class="field"><label for="faq-search">질문 검색</label><input type="search" id="faq-search" aria-controls="faq-list" aria-describedby="faq-count"></div><button class="btn small" type="button" id="faq-expand" aria-controls="faq-list" aria-expanded="false">모두 펼치기 <span aria-hidden="true">+</span></button></div>
   <p class="faq-count" id="faq-count" role="status" aria-live="polite">질문 {len(COPY["questions"])}개</p>
@@ -197,7 +255,7 @@ def resource_button(item):
 
 
 resource_items = "".join(f'<li class="resource">{prose("h2", item["title"])}{prose("p", item["by"], "class=\"by\"")}{paragraphs(item["paragraphs"])}{resource_button(item)}</li>' for item in COPY["resources"])
-resources_body = page_hero("resources.html", COPY["resources_intro"], [("library", "더 보기"), ("info", "정보")])
+resources_body = page_hero("resources.html", [("library", "더 보기"), ("info", "정보")])
 resources_body += f'''<section class="section" id="library"><div class="wrap"><ul class="resource-list">{resource_items}</ul></div></section>
 <section class="section soft" id="info" aria-labelledby="info-title"><div class="wrap">{prose("h2", "정보", 'class="section-title" id="info-title"')}
 <table class="info-table"><tbody>
@@ -214,15 +272,15 @@ scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
   <h1 id="hero-title" data-manuscript>차별금지법,<br>모두를 위한<br><mark>평등의 기준</mark></h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
-  <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+  <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn yellow" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div></section>
 <section class="section" aria-labelledby="summary-title"><div class="wrap">{prose("h2", HOME["summary_title"], 'class="section-title" id="summary-title"')}<div class="pillars">{pillars}</div></div></section>
 <section class="section soft" aria-labelledby="grounds-title"><div class="wrap">{prose("h2", HOME["grounds_title"], 'class="section-title" id="grounds-title"')}{prose("p", HOME["grounds_intro"], 'class="section-intro"')}{grounds_html()}<div class="section-foot"><a class="text-link" href="about.html#grounds">더 알아보기 →</a></div></div></section>
 <section class="section" aria-labelledby="scenes-title"><div class="wrap">{prose("h2", PAGES[1][3], 'class="section-title" id="scenes-title"')}<div class="scene-grid">{scene_cards}</div><div class="section-foot"><a class="text-link" href="scenes.html">더 알아보기 →</a></div></div></section>
 <section class="section soft" aria-labelledby="stats-title"><div class="wrap">{prose("h2", HOME["stats_title"], 'class="section-title" id="stats-title"')}
-<div class="stat-hero stats-summary section-content"><div>{prose("p", HOME["support_value"], 'class="big-number range"')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}<div class="recommendations">{prose("p", HOME["recommendation_value"], 'class="big-number"')}{prose("h3", HOME["recommendation_title"])}{prose("p", HOME["recommendation_caption"], 'class="muted"')}{dots}</div></div>{surveys}</div>
+<div class="stat-hero stats-summary section-content"><div>{prose("p", HOME["support_value"], 'class="big-number range"')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}{recommendation_card()}</div>{surveys}</div>
 <div class="section-foot"><a class="text-link" href="why.html">더 알아보기 →</a></div></div></section>
-<section class="section" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{question_list}</div><div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
+<section class="section" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{home_questions}</div><div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
 <section class="section pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">{prose("h2", HOME["join_title"], 'class="section-title" id="join-title"')}<div class="join">
 <article class="join-path">{prose("p", HOME["share"])}<div class="actions"><button class="btn small" type="button" data-share hidden>사이트 링크 공유</button>{external(LINKS["leaflet"], HOME["leaflet"], "btn purple small")}</div></article>
 <article class="join-path">{prose("p", HOME["newsletter_question"])}{prose("p", HOME["newsletter"])}<div class="actions">{external(LINKS["newsletter"], HOME["newsletter_button"], "btn purple small")}</div></article>
