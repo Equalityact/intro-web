@@ -62,6 +62,7 @@
       return index;
     }
     sceneSelector.hidden = false;
+    $('#scene-hint').hidden = false;
     panels.forEach((panel, index) => {
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', tabs[index].id);
@@ -86,6 +87,20 @@
     });
     if (sceneFromHash(true) === -1) selectScene(0);
     window.addEventListener('hashchange', () => sceneFromHash(true));
+  }
+
+  if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const comparisonObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.closest('.scene-comparison').classList.add('comparison-visible');
+        comparisonObserver.unobserve(entry.target);
+      });
+    }, { threshold: .2, rootMargin: '0px 0px -32px 0px' });
+    $$('.scene-comparison').forEach(card => {
+      card.classList.add('comparison-ready');
+      comparisonObserver.observe($('.comparison-box.after', card));
+    });
   }
 
   const sectionJump = $('.section-jump');

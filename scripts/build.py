@@ -162,20 +162,19 @@ for scene in COPY["scenes"]:
     sid = scene["id"]
     scene_tabs += f'<button type="button" id="tab-{sid}" role="tab" aria-controls="{sid}" aria-selected="false" tabindex="-1">{prose("span", scene["title"])}</button>'
     cards = ""
-    if len(scene["items"]) != len(scene["comparisons"]):
+    if len(scene["items"]) != len(scene["before"]):
         raise ValueError("Each manuscript scene needs one comparison")
-    for index, (after, example) in enumerate(zip(scene["items"], scene["comparisons"]), 1):
+    for index, (after, before) in enumerate(zip(scene["items"], scene["before"]), 1):
         cards += f'''<article class="scene-comparison" aria-labelledby="compare-{sid}-{index}">
-  <div class="scene-place">{prose("h4", example["place"], f'id="compare-{sid}-{index}"')}<span aria-hidden="true">{index:02d} / {len(scene["items"]):02d}</span></div>
-  <div class="comparison-grid"><div class="comparison-box">{prose("h5", comparison["before_label"])}{prose("p", example["before"])}</div><span class="comparison-arrow" aria-hidden="true">→</span><div class="comparison-box after">{prose("h5", comparison["after_label"])}{prose("p", after)}</div></div>
-  <dl class="scene-axes"><div>{prose("dt", comparison["reason_label"])}<dd>{prose("span", example["reason"], 'class="tag"')}</dd></div><div>{prose("dt", comparison["area_label"])}<dd>{prose("span", scene["area"], 'class="tag"')}</dd></div></dl>
+  <div class="comparison-grid"><div class="comparison-box">{prose("h4", comparison["before_label"])}{prose("p", before)}</div><span class="comparison-arrow" aria-hidden="true">→</span><div class="comparison-box after">{prose("h4", comparison["after_label"])}{prose("p", after, f'id="compare-{sid}-{index}"')}</div></div>
 </article>'''
     scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{prose("h3", scene["title"], f'class="scene-area-title" id="{sid}-title"')}{cards}</section>'
 scenes_body = page_hero("scenes.html", [(s["id"], s["title"]) for s in COPY["scenes"]])
 scenes_body += f'''<section class="section" aria-labelledby="comparison-title"><div class="wrap">
 {prose("p", comparison["label"], 'class="eyebrow"')}{prose("h2", comparison["title"], 'class="section-title comparison-title" id="comparison-title"')}
-<div class="scene-selector" role="tablist" aria-label="일상 장면 선택" hidden>{scene_tabs}</div>
-<div class="scene-panels">{scene_sections}</div>{prose("p", comparison["caption"], 'class="caption comparison-caption"')}
+{prose("p", comparison["hint"], 'class="section-intro muted" id="scene-hint" hidden')}
+<div class="scene-selector" role="tablist" aria-label="일상 장면 선택" aria-describedby="scene-hint" hidden>{scene_tabs}</div>
+<div class="scene-panels">{scene_sections}</div>
 </div></section>''' + pager("scenes.html")
 
 survey_rows = []
@@ -270,7 +269,7 @@ resources_body += f'''<section class="section" id="library"><div class="wrap"><u
 pillars = "".join(f'<article class="pillar"><div class="role" aria-hidden="true">{index:02d}</div>{prose("h3", title)}{prose("p", body)}</article>' for index, (title, body) in enumerate(HOME["pillars"], 1))
 scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><div class="scene-top"><span class="scene-index" aria-hidden="true">{index:02d}</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>{prose("h3", scene["title"])}<span class="scene-link">더 알아보기 <span class="arrow" aria-hidden="true">→</span></span></a>' for index, (scene, glyph) in enumerate(zip(COPY["scenes"], ["[ ]", "?", "↔", "="]), 1))
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
-  <h1 id="hero-title" data-manuscript>차별금지법,<br>모두를 위한<br><mark>평등의 기준</mark></h1>
+  <h1 id="hero-title" data-manuscript><span class="hero-title-line">차별금지법,</span><span class="hero-title-line">모두를 위한</span><span class="hero-title-line"><mark>평등의 기준</mark></span></h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
   <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div></section>
