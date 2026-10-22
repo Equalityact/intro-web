@@ -7,7 +7,8 @@
     "generate": "python3 scripts/build.py",
     "dev": "live-server public --port=3000 --no-browser --middleware=$PWD/scripts/clean-urls.js",
     "start": "live-server public --port=3000 --middleware=$PWD/scripts/clean-urls.js",
-    "check": "python3 scripts/check.py"
+    "check": "python3 scripts/check.py && node --test tests/timeline.test.cjs",
+    "export:timeline": "python3 scripts/export-timeline-sheet.py"
   },
   "devDependencies": {
     "live-server": "^1.2.2"

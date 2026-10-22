@@ -172,6 +172,16 @@ button:disabled { cursor: default; opacity: .45; }
 .block-head h2 { font-size: 36px; text-wrap: balance; }
 .block-body { min-width: 0; max-width: var(--reading-max); }
 .block-body > .visual { margin-top: var(--space-5); }
+@media (min-width: 1100px) {
+  .block, .editorial-columns { row-gap: 16px; }
+  .block-head, .editorial-title { display: contents; }
+  .block-head > .num, .block-head > .eyebrow, .editorial-title > .eyebrow { grid-column: 1; grid-row: 1; margin-bottom: 0; }
+  .block-head > .eyebrow, .editorial-title > .eyebrow { margin-bottom: 8px; }
+  .block-head h2 { grid-column: 1; grid-row: 2; align-self: start; }
+  .block-body { grid-column: 2; grid-row: 2; align-self: start; }
+  .editorial-content { grid-column: 1; grid-row: 2; align-self: start; }
+  .editorial-columns > .reading { grid-column: 2; grid-row: 2; align-self: start; }
+}
 .callout { padding: var(--space-5); border-radius: var(--radius-lg); background: var(--color-yellow-soft); }
 .callout.purple { background: var(--color-purple-soft); }
 .callout > strong + p { margin-top: 12px; }
@@ -309,7 +319,12 @@ button:disabled { cursor: default; opacity: .45; }
 .info-table { width: 100%; max-width: 900px; border-collapse: collapse; }
 .info-table th, .info-table td { padding: 20px 16px; border-bottom: 1px solid var(--color-line); text-align: left; vertical-align: top; }
 .info-table th { width: 140px; font-weight: 500; }
-.info-table a { color: var(--color-purple); }
+.info-links { display: flex; flex-wrap: wrap; gap: 8px; }
+.info-account { margin-bottom: 12px; }
+.info-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; max-width: 100%; min-height: 44px; padding: 8px 14px; border: 1px solid var(--color-line); border-radius: var(--radius-pill); background: var(--color-base); color: var(--color-ink); font-size: 16px; font-weight: 500; line-height: 1.5; text-decoration: none; }
+.info-link > span:first-child { min-width: 0; overflow-wrap: anywhere; }
+.info-link > span[aria-hidden] { flex-shrink: 0; }
+.info-link:hover { background: var(--color-purple-soft); border-color: var(--color-purple); color: var(--color-purple); }
 .join { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; margin-top: var(--space-6); }
 .join-path { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px; border: var(--border-component); border-radius: var(--radius-lg); background: var(--color-base); }
 .join-path .actions { margin-top: auto; padding-top: 8px; }

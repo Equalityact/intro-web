@@ -63,7 +63,8 @@ def page_hero(filename, toc=()):
     _, number, short, title = next(page for page in PAGES if page[0] == filename)
     links = "".join(f'<li><a href="#{ident}">{prose("span", label)}</a></li>' for ident, label in toc)
     lead_html = prose("p", COPY["page_introductions"][filename], 'class="lead"')
-    toc_html = f'<ul class="page-toc" aria-label="이 페이지의 내용">{links}</ul>' if links else ""
+    toc_attrs = ' data-timeline-toc' if filename == "timeline.html" else ""
+    toc_html = f'<ul class="page-toc" aria-label="이 페이지의 내용"{toc_attrs}>{links}</ul>' if links else ""
     return f'''<section class="page-hero"><div class="wrap">
   <p class="eyebrow"><b aria-hidden="true">{number}</b>{prose("span", short)}</p>
   {prose("h1", title)}{lead_html}{toc_html}
@@ -86,6 +87,7 @@ def layout(filename, title, description, body):
         for name, _, short, _ in PAGES
     )
     site_title = HOME["name"] if filename == "index.html" else f'{title} · {HOME["name"]}'
+    timeline_script = '<script src="assets/js/timeline.js" defer></script>\n' if filename == "timeline.html" else ""
     section_menu = ""
     if filename == "index.html":
         section_links = "".join(f'<li><a href="#{ident}"><span aria-hidden="true">{index:02d}</span>{prose("span", label)}</a></li>' for index, (ident, label) in enumerate(HOME["section_navigation"], 1))
@@ -125,7 +127,7 @@ def layout(filename, title, description, body):
 </div></div></footer>
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <script src="assets/js/main.js" defer></script>
-</body>
+{timeline_script}</body>
 </html>
 '''
 
@@ -218,7 +220,7 @@ for index, block in enumerate(COPY["why"]):
     elif index == 2:
         closing = COPY["why_closing"]
         global_paragraphs = emphasised_paragraph(block["paragraphs"][0], block["emphasis"]) + paragraphs(block["paragraphs"][1:])
-        body = f'''<div class="stat-hero"><div><p class="eyebrow"><b aria-hidden="true">03</b>{prose("span", block["label"])}</p>{title}{recommendation_card(False)}</div>
+        body = f'''<div class="stat-hero editorial-columns"><div class="editorial-title"><p class="eyebrow"><b aria-hidden="true">03</b>{prose("span", block["label"])}</p><div class="editorial-content">{title}{recommendation_card(False)}</div></div>
 <div class="reading">{global_paragraphs}<div class="callout section-content">{prose("p", closing["title"], 'class="callout-title"')}{prose("p", closing["body"])}</div></div></div>'''
     else:
         body = title + body
@@ -247,7 +249,7 @@ for period in COPY["timeline"]:
     items = "".join(f'<li class="timeline-item"><article class="timeline-card">{prose("h3", item["title"])}{linked_paragraphs(item)}</article></li>' for item in period["items"])
     periods += f'<section class="period" id="{period["id"]}" aria-labelledby="{period["id"]}-title"><div class="period-head">{prose("h2", period["title"], f'id="{period["id"]}-title"')}</div><ol class="timeline">{items}</ol></section>'
 timeline_body = page_hero("timeline.html", toc=[(p["id"], p["title"]) for p in COPY["timeline"]])
-timeline_body += f'<section class="section"><div class="wrap"><div class="timeline-periods">{periods}</div></div></section>' + pager("timeline.html")
+timeline_body += f'<section class="section"><div class="wrap"><div class="timeline-periods" data-timeline>{periods}</div></div></section>' + pager("timeline.html")
 
 def resource_button(item):
     return f'<a class="btn purple small" href="{h(item["url"])}" {EXT}>자료 보기 <span aria-hidden="true">↗</span></a>'
@@ -259,11 +261,11 @@ resources_body += f'''<section class="section" id="library"><div class="wrap"><u
 <section class="section soft" id="info" aria-labelledby="info-title"><div class="wrap">{prose("h2", "정보", 'class="section-title" id="info-title"')}
 <table class="info-table"><tbody>
   <tr><th scope="row">제작</th><td>{prose("span", "차별금지법제정연대")}</td></tr>
-  <tr><th scope="row">홈페이지</th><td>{external(LINKS["home"], "equalityact.kr")}</td></tr>
-  <tr><th scope="row">후원 계좌</th><td>{prose("span", "우리은행 1006‒201‒507617 차별금지법제정연대")}<br>{external(LINKS["donate"], "후원하기")}</td></tr>
-  <tr><th scope="row">SNS</th><td>{external(LINKS["facebook"], "페이스북 @equalact2017")} · {external(LINKS["instagram"], "인스타그램 @equalityact_allpeople")} · {external(LINKS["twitter"], "트위터 @equalact")}</td></tr>
-  <tr><th scope="row">이메일</th><td><a href="mailto:equalact2017@gmail.com">{prose("span", "equalact2017@gmail.com")}</a></td></tr>
-  <tr><th scope="row">뉴스레터 구독하기</th><td>{external(LINKS["newsletter"], LINKS["newsletter"])}</td></tr>
+  <tr><th scope="row">홈페이지</th><td><div class="info-links">{external(LINKS["home"], "equalityact.kr", "info-link")}</div></td></tr>
+  <tr><th scope="row">후원 계좌</th><td>{prose("p", "우리은행 1006‒201‒507617 차별금지법제정연대", 'class="info-account"')}<div class="info-links">{external(LINKS["donate"], "후원하기", "info-link")}</div></td></tr>
+  <tr><th scope="row">SNS</th><td><div class="info-links">{external(LINKS["facebook"], "페이스북 @equalact2017", "info-link")}{external(LINKS["instagram"], "인스타그램 @equalityact_allpeople", "info-link")}{external(LINKS["twitter"], "트위터 @equalact", "info-link")}</div></td></tr>
+  <tr><th scope="row">이메일</th><td><div class="info-links"><a class="info-link" href="mailto:equalact2017@gmail.com">{prose("span", "equalact2017@gmail.com")}</a></div></td></tr>
+  <tr><th scope="row">뉴스레터 구독하기</th><td><div class="info-links">{external(LINKS["newsletter"], HOME["newsletter_button"], "info-link")}</div></td></tr>
 </tbody></table></div></section>''' + pager("resources.html")
 
 pillars = "".join(f'<article class="pillar"><div class="role" aria-hidden="true">{index:02d}</div>{prose("h3", title)}{prose("p", body)}</article>' for index, (title, body) in enumerate(HOME["pillars"], 1))
