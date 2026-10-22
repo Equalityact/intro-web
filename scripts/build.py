@@ -108,7 +108,7 @@ def layout(filename, title, description, body):
 <body>
 <a class="skip" href="#main">본문으로 바로가기</a>
 <header class="site-header"><div class="wrap">
-  <a class="wordmark" href="index.html">{prose("span", HOME["name"])}{prose("small", HOME["brand_tagline"])}</a>
+  <a class="wordmark" href="index.html">{prose("span", HOME["wordmark"])}</a>
   <button class="menu-toggle" type="button" aria-controls="gnb" aria-expanded="false">메뉴 열기</button>
   <nav class="gnb" id="gnb" aria-label="주요 메뉴"><ul>{navigation}</ul></nav>
 </div></header>
@@ -272,7 +272,7 @@ scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
   <h1 id="hero-title" data-manuscript>차별금지법,<br>모두를 위한<br><mark>평등의 기준</mark></h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
-  <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn yellow" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
+  <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div></section>
 <section class="section" aria-labelledby="summary-title"><div class="wrap">{prose("h2", HOME["summary_title"], 'class="section-title" id="summary-title"')}<div class="pillars">{pillars}</div></div></section>
 <section class="section soft" aria-labelledby="grounds-title"><div class="wrap">{prose("h2", HOME["grounds_title"], 'class="section-title" id="grounds-title"')}{prose("p", HOME["grounds_intro"], 'class="section-intro"')}{grounds_html()}<div class="section-foot"><a class="text-link" href="about.html#grounds">더 알아보기 →</a></div></div></section>
