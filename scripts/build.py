@@ -94,7 +94,7 @@ def layout(filename, title, description, body):
 <body>
 <a class="skip" href="#main">본문으로 바로가기</a>
 <header class="site-header"><div class="wrap">
-  <a class="wordmark" href="index.html">{prose("span", HOME["name"])}{prose("small", "차별금지법제정연대")}</a>
+  <a class="wordmark" href="index.html">{prose("span", HOME["name"])}{prose("small", HOME["brand_tagline"])}</a>
   <button class="menu-toggle" type="button" aria-controls="gnb" aria-expanded="false">메뉴 열기</button>
   <nav class="gnb" id="gnb" aria-label="주요 메뉴"><ul>{navigation}</ul></nav>
 </div></header>
@@ -193,10 +193,7 @@ timeline_body = page_hero("timeline.html", toc=[(p["id"], p["title"]) for p in C
 timeline_body += f'<section class="section"><div class="wrap"><div class="timeline-periods">{periods}</div></div></section>' + pager("timeline.html")
 
 def resource_button(item):
-    url = item.get("url")
-    if url:
-        return f'<a class="btn purple small" href="{h(url)}" {EXT}>자료 보기 <span aria-hidden="true">↗</span></a>'
-    return '<button class="btn purple small" type="button" disabled>자료 보기</button>'
+    return f'<a class="btn purple small" href="{h(item["url"])}" {EXT}>자료 보기 <span aria-hidden="true">↗</span></a>'
 
 
 resource_items = "".join(f'<li class="resource">{prose("h2", item["title"])}{prose("p", item["by"], "class=\"by\"")}{paragraphs(item["paragraphs"])}{resource_button(item)}</li>' for item in COPY["resources"])
@@ -223,7 +220,7 @@ index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="
 <section class="section soft" aria-labelledby="grounds-title"><div class="wrap">{prose("h2", HOME["grounds_title"], 'class="section-title" id="grounds-title"')}{prose("p", HOME["grounds_intro"], 'class="section-intro"')}{grounds_html()}<div class="section-foot"><a class="text-link" href="about.html#grounds">더 알아보기 →</a></div></div></section>
 <section class="section" aria-labelledby="scenes-title"><div class="wrap">{prose("h2", PAGES[1][3], 'class="section-title" id="scenes-title"')}<div class="scene-grid">{scene_cards}</div><div class="section-foot"><a class="text-link" href="scenes.html">더 알아보기 →</a></div></div></section>
 <section class="section soft" aria-labelledby="stats-title"><div class="wrap">{prose("h2", HOME["stats_title"], 'class="section-title" id="stats-title"')}
-<div class="stat-hero section-content"><div>{prose("p", HOME["support_value"], 'class="big-number range"')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}<div class="recommendations">{prose("p", HOME["recommendation_value"], 'class="big-number"')}{prose("h3", HOME["recommendation_title"])}{prose("p", HOME["recommendation_caption"], 'class="muted"')}{dots}</div></div>{surveys}</div>
+<div class="stat-hero stats-summary section-content"><div>{prose("p", HOME["support_value"], 'class="big-number range"')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}<div class="recommendations">{prose("p", HOME["recommendation_value"], 'class="big-number"')}{prose("h3", HOME["recommendation_title"])}{prose("p", HOME["recommendation_caption"], 'class="muted"')}{dots}</div></div>{surveys}</div>
 <div class="section-foot"><a class="text-link" href="why.html">더 알아보기 →</a></div></div></section>
 <section class="section" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{question_list}</div><div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
 <section class="section pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">{prose("h2", HOME["join_title"], 'class="section-title" id="join-title"')}<div class="join">
