@@ -381,8 +381,8 @@ button:disabled { cursor: default; opacity: .45; }
 
 /* 페이지 이동과 바닥글 */
 .pager { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; padding-block: 32px 64px; border-top: 1px solid var(--color-line); }
-.pager a { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; min-height: 100px; padding: 20px 24px; border: var(--border-component); border-radius: var(--radius-lg); text-decoration: none; }
-.pager a:hover { background: var(--color-canvas); }
+.pager a { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; min-height: 100px; padding: 20px 0; text-decoration: none; }
+.pager a:hover strong { color: var(--color-purple); text-decoration: underline; text-decoration-thickness: 1px; }
 .pager small { font-size: 14px; color: var(--color-muted); }
 .pager strong { font-family: var(--font-title); font-size: 24px; font-weight: 600; line-height: 1.4; }
 .pager .next { grid-column: 2; align-items: flex-end; text-align: right; }
@@ -477,7 +477,6 @@ button:disabled { cursor: default; opacity: .45; }
   .info-table th { border-bottom: 0; padding-bottom: 0; }
   .pager { grid-template-columns: 1fr; gap: 16px; }
   .pager .next { grid-column: 1; }
-  .pager a { padding: 20px; }
   .footer-info { grid-template-columns: 1fr; gap: 4px; }
   .footer-info dd { margin-bottom: 16px; }
 }
