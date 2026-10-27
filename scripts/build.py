@@ -168,7 +168,7 @@ for scene in COPY["scenes"]:
         raise ValueError("Each manuscript scene needs one comparison")
     for index, (after, before) in enumerate(zip(scene["items"], scene["before"]), 1):
         cards += f'''<article class="scene-comparison" aria-labelledby="compare-{sid}-{index}">
-  <div class="comparison-grid"><div class="comparison-box">{prose("h4", comparison["before_label"])}{prose("p", before)}</div><span class="comparison-arrow" aria-hidden="true">→</span><div class="comparison-box after">{prose("h4", comparison["after_label"])}{prose("p", after, f'id="compare-{sid}-{index}"')}</div></div>
+  <div class="comparison-grid"><div class="comparison-box">{prose("p", before)}</div><span class="comparison-arrow" aria-hidden="true">→</span><div class="comparison-box after">{prose("p", after, f'id="compare-{sid}-{index}"')}</div></div>
 </article>'''
     scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{prose("h3", scene["title"], f'class="scene-area-title" id="{sid}-title"')}{cards}</section>'
 scenes_body = page_hero("scenes.html", [(s["id"], s["title"]) for s in COPY["scenes"]])
