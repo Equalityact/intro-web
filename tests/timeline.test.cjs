@@ -12,6 +12,16 @@ const source = 'https://docs.google.com/spreadsheets/d/e/example/pub?gid=0&singl
 const csv = (...rows) => rows.map(row => row.map(value => '"' + value.replaceAll('"', '""') + '"').join(',')).join('\r\n');
 const head = ['시기', '제목', '본문', '공개'];
 
+test('optional sheet color maps only approved values and preserves content and links', () => {
+  for (const [input, expected] of [['핑크', 'pink'], ['옐로', 'yellow'], ['퍼플', 'purple'], ['', undefined], ['임의 색상', undefined], ['__proto__', undefined]]) {
+    const result = parseTimelineCsv(csv([...head, '색상'], ['23대 국회', '사건', '[원문](https://example.com)', '예', input]));
+    const item = result[0].items[0];
+    assert.equal(item.color, expected);
+    assert.equal(item.paragraphs[0], '원문');
+    assert.equal(item.paragraph_links[0][0].url, 'https://example.com');
+  }
+});
+
 test('import template retains all 11 events and all 37 bracket-specific links verbatim', () => {
   const result = parseTimelineCsv(template, timeline);
   const expected = timeline.map(period => ({ ...period, items: period.items.map(item => ({

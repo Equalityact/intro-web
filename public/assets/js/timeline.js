@@ -63,6 +63,7 @@
       period.items.forEach(item => {
         if (++count > 1000 || typeof item.title !== 'string' || !item.title.trim() || !Array.isArray(item.paragraphs) || !Array.isArray(item.paragraph_links) || item.paragraph_links.length !== item.paragraphs.length) throw new Error('Invalid event');
         const row = element('li', 'timeline-item');
+        if (['pink', 'yellow', 'purple'].includes(item.color)) row.classList.add(`timeline-color-${item.color}`);
         const card = element('article', 'timeline-card');
         const meta = item.meta || {};
         const metadata = element('div', 'timeline-meta');
