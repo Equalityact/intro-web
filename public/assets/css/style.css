@@ -281,7 +281,7 @@ button:disabled { cursor: default; opacity: .45; }
 .recommendations h3 { font-size: 26px; margin-top: 12px; }
 .recommendations .muted { margin-top: 16px; }
 .dots { display: grid; grid-template-columns: repeat(7, 24px); gap: 10px; margin-block: 24px; }
-.dots span { width: 24px; height: 24px; border: var(--border-component); border-radius: 50%; background: var(--color-purple); }
+.dots span { width: 24px; height: 24px; border: var(--border-component); border-radius: 50%; background: var(--color-brand); }
 
 /* 문답: 질문과 답의 요지는 항상 노출 */
 .faq-toolbar { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
