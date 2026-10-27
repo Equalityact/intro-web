@@ -131,15 +131,15 @@ button:disabled { cursor: default; opacity: .45; }
 
 /* 첫 화면: 가이드의 검정 히어로 예시 */
 .hero { background: var(--color-hero); color: var(--color-base); padding: 112px 0; }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: center; gap: 40px; }
-.hero h1 { font-size: 72px; font-weight: var(--font-weight-display); line-height: 1.35; letter-spacing: -.03em; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1.65fr); align-items: center; gap: 40px; }
+.hero h1 { font-size: clamp(40px, 4.6vw, 64px); font-weight: var(--font-weight-display); line-height: 1.35; letter-spacing: -.03em; }
 .hero-title-line { display: block; }
 .hero mark { background: var(--color-brand); color: var(--color-on-brand); padding: 0 .12em; border-radius: 8px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
 .hero-lead { white-space: pre-line; max-width: 480px; margin-top: var(--space-5); color: var(--color-line); font-size: 20px; }
 .hero :focus-visible { outline-color: var(--color-yellow); }
 .shape-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 24px; width: 100%; min-width: 0; aspect-ratio: 1; padding: 30px; border-radius: var(--radius-lg); background: var(--color-purple); color: var(--color-on-purple); text-align: center; }
 .shape-panel .eq { color: var(--color-yellow); font-size: 120px; font-weight: 500; line-height: .9; }
-.shape-panel .shape-caption { color: var(--color-ink); font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
+.shape-panel .shape-caption { color: var(--color-on-purple); font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
 .caption-word { display: inline-block; white-space: nowrap; }
 .caption-accessible { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; user-select: none; }
 @keyframes equals-signal {
@@ -373,9 +373,11 @@ button:disabled { cursor: default; opacity: .45; }
 @media (min-width: 768px) and (max-width: 1099px) {
   :root { --gutter: 32px; --section-gap: 80px; }
   .hero h1, .page-hero h1 { font-size: 52px; }
-  .hero h1 { font-size: 56px; }
+  .hero h1 { font-size: 40px; }
   .hero-grid { gap: 28px; }
   .shape-panel { padding: 24px; }
+  .shape-panel .eq { font-size: 88px; }
+  .shape-panel .shape-caption { font-size: 22px; }
   .block, .stat-hero { grid-template-columns: 1fr; gap: 32px; }
   .join { grid-template-columns: 1fr; }
   .join-path { display: grid; grid-template-columns: 180px minmax(0, 1fr); }
@@ -402,6 +404,7 @@ button:disabled { cursor: default; opacity: .45; }
   .hero { padding: 64px 0 72px; }
   .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .hero h1, .page-hero h1 { font-size: 36px; }
+  .hero h1 { font-size: clamp(24px, 7vw, 36px); }
   .hero-lead { font-size: 18px; }
   .shape-panel { padding: 24px; }
   .shape-panel .eq { font-size: 88px; }
@@ -453,7 +456,6 @@ button:disabled { cursor: default; opacity: .45; }
 }
 @media (max-width: 359px) {
   :root { --gutter: 20px; }
-  .hero h1 { font-size: 34px; }
   .site-header .wrap { gap: 12px; }
   .wordmark { font-size: 18px; }
   .menu-toggle { font-size: 13px; padding-inline: 12px; }

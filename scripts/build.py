@@ -293,7 +293,7 @@ resources_body += f'''<section class="section" id="library"><div class="wrap"><u
 pillars = "".join(f'<article class="pillar"><div class="role" aria-hidden="true">{index:02d}</div>{prose("h3", title)}{prose("p", body)}</article>' for index, (title, body) in enumerate(HOME["pillars"], 1))
 scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><div class="scene-top"><span class="scene-index" aria-hidden="true">{index:02d}</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>{prose("h3", scene["title"])}<span class="scene-link">더 알아보기 <span class="arrow" aria-hidden="true">→</span></span></a>' for index, (scene, glyph) in enumerate(zip(COPY["scenes"], ["[ ]", "?", "↔", "="]), 1))
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
-  <h1 id="hero-title" data-manuscript><span class="hero-title-line">차별금지법,</span><span class="hero-title-line">모두를 위한</span><span class="hero-title-line"><mark>평등의 기준</mark></span></h1>
+  <h1 id="hero-title" data-manuscript><span class="hero-title-line">차별금지법,</span><span class="hero-title-line">모두를 위한 <mark>평등의 기준</mark></span></h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
   <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div></section>
