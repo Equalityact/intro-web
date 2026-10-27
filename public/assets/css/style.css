@@ -124,10 +124,9 @@ button:disabled { cursor: default; opacity: .45; }
 .section-jump ol { width: 152px; max-height: calc(100dvh - 180px); overflow-y: auto; overscroll-behavior: contain; list-style: none; margin: 0; padding: 8px; background: var(--color-base); border: var(--border-component); border-radius: var(--radius-lg); }
 .section-jump a { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; text-decoration: none; }
 .section-jump a > span:first-child { font-size: 11px; font-variant-numeric: tabular-nums; }
+@media (max-width: 1439px) { .section-jump { display: none; } }
 .section-jump a:hover { background: var(--color-canvas); }
 .section-jump a[aria-current="location"] { background: var(--color-purple-soft); color: var(--color-purple); font-weight: 600; }
-.section-jump-toggle span { transition: transform .18s; }
-.section-jump-toggle[aria-expanded="false"] span { transform: rotate(180deg); }
 
 /* 버튼과 링크 */
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 48px; padding: 11px 22px; border: var(--border-component); border-radius: var(--radius-sm); background: var(--color-base); color: var(--color-ink); font-size: 16px; font-weight: 600; line-height: 1.5; text-align: center; text-decoration: none; transition: background .18s, color .18s, border-color .18s; }
@@ -137,7 +136,6 @@ button:disabled { cursor: default; opacity: .45; }
 .btn.on-dark { background: transparent; color: var(--color-base); border-color: var(--color-base); }
 .btn.on-dark:hover { background: var(--color-base); color: var(--color-ink); }
 .btn.small { min-height: 44px; padding: 9px 18px; font-size: 14px; }
-.section-jump-toggle.btn { width: 44px; padding: 0; font-size: 18px; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--space-6); }
 .arrow { flex-shrink: 0; font-size: 20px; line-height: 1; }
 .text-link { display: inline-block; color: var(--color-purple); font-weight: 500; text-decoration-thickness: 1px; }

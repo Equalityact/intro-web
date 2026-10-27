@@ -116,7 +116,6 @@ def layout(filename, title, description, body):
         section_links = "".join(f'<li><a href="#{ident}"><span aria-hidden="true">{index:02d}</span>{prose("span", label)}</a></li>' for index, (ident, label) in enumerate(HOME["section_navigation"], 1))
         section_menu = f'''<nav class="section-jump" aria-label="메인 페이지 섹션">
   <ol id="home-section-links">{section_links}</ol>
-  <button class="btn purple small section-jump-toggle" type="button" aria-label="섹션 메뉴 접기" aria-controls="home-section-links" aria-expanded="true" hidden><span aria-hidden="true">⌃</span></button>
 </nav>'''
     return f'''<!doctype html>
 <html lang="ko">

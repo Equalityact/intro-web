@@ -181,31 +181,9 @@
 
   const sectionJump = $('.section-jump');
   if (sectionJump) {
-    const sectionButton = $('.section-jump-toggle', sectionJump);
     const sectionList = $('#home-section-links');
     const sectionLinks = $$('a', sectionList);
     const sections = sectionLinks.map(link => document.getElementById(link.hash.slice(1)).closest('section'));
-    const compactJump = matchMedia('(max-width: 1439px)');
-    function setSectionMenu(open, returnFocus = false) {
-      sectionList.hidden = !open;
-      sectionButton.setAttribute('aria-expanded', String(open));
-      sectionButton.setAttribute('aria-label', open ? '섹션 메뉴 접기' : '섹션 메뉴 열기');
-      if (returnFocus) sectionButton.focus();
-    }
-    sectionButton.hidden = false;
-    sectionButton.addEventListener('click', () => setSectionMenu(sectionList.hidden));
-    compactJump.addEventListener('change', () => setSectionMenu(!compactJump.matches));
-    sectionLinks.forEach(link => link.addEventListener('click', () => {
-      if (compactJump.matches) setSectionMenu(false, true);
-    }));
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && !sectionList.hidden) setSectionMenu(false, sectionJump.contains(document.activeElement));
-    });
-    document.addEventListener('click', event => {
-      if (compactJump.matches && !sectionJump.contains(event.target)) setSectionMenu(false);
-    });
-    setSectionMenu(!compactJump.matches);
-
     // Follow section boundaries, including long sections and expanded answers.
     let scrollPending = false;
     function updateSection() {
