@@ -233,8 +233,18 @@ button:disabled { cursor: default; opacity: .45; }
 .callout-title { font-family: var(--font-title); font-size: 26px; line-height: 1.4; font-weight: 600; white-space: pre-line; }
 
 /* 도형: 같은 역할에는 같은 모양과 크기 */
-.grounds { display: flex; flex-wrap: wrap; gap: 10px; list-style: none; padding: 0; margin: var(--space-6) 0 0; }
-.ground { display: inline-flex; align-items: center; max-width: 100%; padding: 9px 16px; border: 1px solid var(--color-line); border-radius: var(--diagram-label-radius); background: var(--color-base); font-size: 18px; line-height: 1.65; }
+.grounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; list-style: none; padding: 0; margin: var(--space-6) 0 0; }
+.ground { --ground-fill: var(--color-pink-soft); position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; min-width: 0; aspect-ratio: 1; padding: 20px; font-size: 17px; font-weight: 500; line-height: 1.6; text-align: center; }
+.ground::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ground-fill); border-radius: 8px; }
+.ground--circle::before { border-radius: 50%; }
+.ground--triangle { padding: 46px 24px 12px; }
+.ground--triangle::before { border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.ground--pink { --ground-fill: var(--color-brand); }
+.ground--purple { --ground-fill: var(--color-purple); color: var(--color-on-purple); }
+.ground--yellow { --ground-fill: var(--color-yellow); }
+.ground--pink-soft { --ground-fill: var(--color-pink-soft); }
+.ground--purple-soft { --ground-fill: var(--color-purple-soft); }
+.ground--yellow-soft { --ground-fill: var(--color-yellow-soft); }
 .pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: var(--space-6); }
 .pillar { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px; border-radius: var(--radius-lg); background: var(--color-canvas); }
 .role { display: grid; place-items: center; width: 68px; height: 68px; flex-shrink: 0; border-radius: 50%; background: var(--color-brand); font-weight: 600; }
@@ -454,7 +464,8 @@ button:disabled { cursor: default; opacity: .45; }
   .pillars, .scene-grid, .area-list, .stat-hero, .resource-list, .join { grid-template-columns: 1fr; }
   .pillar { gap: 16px; padding: 24px; }
   .pillar h3, .scene-card h3, .callout-title, .survey h3, .recommendations h3, .resource h2, .timeline-card h3, .q-title { font-size: 24px; }
-  .ground { padding: 8px 14px; }
+  .grounds { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+  .ground { font-size: 16px; }
   .scene-card { min-height: 0; padding: 24px; }
   .scene-comparison { padding: 20px; }
   .comparison-grid { grid-template-columns: 1fr; gap: 12px; }

@@ -61,7 +61,12 @@ def external(url, label, classes=""):
 
 
 def grounds_html():
-    return '<ul class="grounds">' + "".join(prose("li", value, 'class="ground"') for value in HOME["grounds"]) + "</ul>"
+    items = []
+    for index, value in enumerate(HOME["grounds"]):
+        shape = "triangle" if len(value) <= 4 and index % 3 == 2 else "circle" if len(value) <= 8 and index % 2 == 0 else "square"
+        tone = ("pink", "purple-soft", "yellow", "pink-soft", "purple", "yellow-soft")[index % 6]
+        items.append(prose("li", value, f'class="ground ground--{shape} ground--{tone}"'))
+    return '<ul class="grounds">' + "".join(items) + "</ul>"
 
 
 def linked_paragraphs(item):
