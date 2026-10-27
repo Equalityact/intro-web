@@ -148,6 +148,7 @@ button:disabled { cursor: default; opacity: .45; }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 1.65fr); align-items: center; gap: 40px; }
 .hero h1 { font-size: clamp(40px, 4.6vw, 64px); font-weight: var(--font-weight-display); line-height: 1.35; letter-spacing: -.03em; }
 .hero-title-line { display: block; }
+.hero-label { display: inline-block; margin-bottom: 24px; padding: 7px 16px; border: 1.5px solid currentColor; border-radius: var(--radius-pill); color: var(--color-line); font-size: 16px; font-weight: 600; line-height: 1.5; }
 .hero mark { background: transparent; color: inherit; white-space: nowrap; }
 .hero-lead { white-space: pre-line; max-width: 480px; margin-top: var(--space-5); color: var(--color-line); font-size: 20px; }
 .hero :focus-visible { outline-color: var(--color-yellow); }
