@@ -34,7 +34,11 @@ def reading_emphasis(tag, value):
 def prose(tag, value, attrs=""):
     """Mark manuscript text so checks can detect unapproved editorial additions."""
     suffix = f' {attrs}' if attrs else ''
-    return f'<{tag} data-manuscript{suffix}>{reading_emphasis(tag, value)}</{tag}>'
+    content = reading_emphasis(tag, value)
+    if (tag in ("h2", "h3") or 'class="callout-title"' in attrs) and "사회적 합의" in value and "아직" in value:
+        circle = '<span class="pen-circle" data-circle>아직<svg viewBox="0 0 120 64" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path pathLength="1" d="M 103 13 C 76 -2 19 2 9 25 C -3 52 39 64 83 56 C 118 50 127 21 102 12 C 91 8 79 7 71 8"/></svg></span>'
+        content = content.replace("아직", circle, 1)
+    return f'<{tag} data-manuscript{suffix}>{content}</{tag}>'
 
 
 def paragraphs(values, attrs=""):

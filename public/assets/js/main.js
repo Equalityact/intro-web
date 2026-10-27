@@ -32,10 +32,37 @@
     });
     caption.replaceChildren(accessible, visual);
     shapePanel.classList.add('sequence-ready');
-    reducedMotion.addEventListener('change', event => {
-      if (!event.matches) return;
+    // Keep completed text as ordinary text instead of relying on filled animations
+    // being repainted after the hero leaves and re-enters the viewport.
+    const finishSequence = () => {
       shapePanel.classList.remove('sequence-ready');
       caption.textContent = text;
+    };
+    const finishedAt = performance.now() + 2150 + step * 65 + 100;
+    setTimeout(finishSequence, 2150 + step * 65 + 100);
+    window.addEventListener('pageshow', () => {
+      if (performance.now() >= finishedAt) finishSequence();
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden && performance.now() >= finishedAt) finishSequence();
+    });
+    reducedMotion.addEventListener('change', event => {
+      if (!event.matches) return;
+      finishSequence();
+    });
+  }
+
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
+    const circleObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('circle-visible');
+        circleObserver.unobserve(entry.target);
+      });
+    }, { threshold: .6, rootMargin: '0px 0px -10% 0px' });
+    $$('[data-circle]').forEach(phrase => {
+      phrase.classList.add('circle-ready');
+      circleObserver.observe(phrase);
     });
   }
 

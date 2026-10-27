@@ -85,6 +85,14 @@ button:disabled { cursor: default; opacity: .45; }
 .reading { max-width: var(--reading-max); }
 .reading-highlight { --underline-color: var(--color-brand); background-image: linear-gradient(var(--underline-color), var(--underline-color)); background-repeat: no-repeat; background-position: left 94%; background-size: 100% .24em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .reading-highlight--yellow { --underline-color: var(--color-yellow); }
+.pen-circle { position: relative; display: inline-block; white-space: nowrap; }
+.pen-circle svg { position: absolute; inset: -.12em -.18em; width: calc(100% + .36em); height: calc(100% + .24em); overflow: visible; pointer-events: none; }
+.pen-circle path { fill: none; stroke: var(--color-brand); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+@media (prefers-reduced-motion: no-preference) {
+  .pen-circle.circle-ready path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 700ms ease-out; }
+  .pen-circle.circle-visible path { stroke-dashoffset: 0; }
+}
+@media print { .pen-circle path { stroke-dashoffset: 0 !important; } }
 @media (prefers-reduced-motion: no-preference) {
   .reading-highlight.underline-ready { background-size: 0% .24em; transition: background-size 600ms cubic-bezier(.22, .61, .36, 1) 120ms; }
   .reading-highlight.underline-visible { background-size: 100% .24em; }
