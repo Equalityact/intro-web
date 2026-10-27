@@ -2,8 +2,9 @@
 
 const { parseTimelineCsv, fetchSheetCsv } = require('../lib/timeline.cjs');
 const { timeline } = require('../content/manuscript.json');
+const configuredSource = require('../content/timeline-source.json');
 
-function createHandler({ source = () => process.env.TIMELINE_SHEET_CSV_URL, fetchCsv = fetchSheetCsv } = {}) {
+function createHandler({ source = () => process.env.TIMELINE_SHEET_CSV_URL || configuredSource.csvUrl, fetchCsv = fetchSheetCsv } = {}) {
   return async function timelineHandler(req, res) {
     res.setHeader('Content-Type', 'application/json; charset=utf-8');
     res.setHeader('X-Content-Type-Options', 'nosniff');

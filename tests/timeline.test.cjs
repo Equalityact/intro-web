@@ -129,6 +129,16 @@ test('unconfigured API preserves fallback with an uncacheable unavailable respon
   assert.equal(JSON.parse(res.body).error, 'TIMELINE_NOT_CONFIGURED');
 });
 
+test('configured spreadsheet works without a required environment variable', async () => {
+  const configured = require('../content/timeline-source.json');
+  const res = await response(createHandler({ fetchCsv: async url => {
+    assert.equal(url, process.env.TIMELINE_SHEET_CSV_URL || configured.csvUrl);
+    return template;
+  } }));
+  assert.equal(res.statusCode, 200);
+  assert.equal(JSON.parse(res.body).periods.length, 6);
+});
+
 test('API returns validated data with cache headers, supports HEAD, and rejects writes', async () => {
   const handler = createHandler({ source: () => source, fetchCsv: async () => template });
   const res = await response(handler);
