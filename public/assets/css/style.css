@@ -88,6 +88,7 @@ button:disabled { cursor: default; opacity: .45; }
 .reading-highlight path { fill: none; stroke: var(--underline-color); stroke-width: 5; stroke-linecap: round; vector-effect: non-scaling-stroke; }
 .reading-highlight--straight { display: inline; background-image: linear-gradient(var(--underline-color), var(--underline-color)); background-repeat: no-repeat; background-position: left 94%; background-size: 100% .24em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .reading-highlight--yellow { --underline-color: var(--color-yellow); }
+.reading-highlight--purple { --underline-color: var(--color-purple); }
 .pen-circle { position: relative; display: inline-block; white-space: nowrap; }
 .pen-circle svg { position: absolute; inset: -.12em -.18em; width: calc(100% + .36em); height: calc(100% + .24em); overflow: visible; pointer-events: none; }
 .pen-circle path { fill: none; stroke: var(--color-brand); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }

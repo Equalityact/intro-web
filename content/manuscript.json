@@ -862,6 +862,11 @@
   "why_source_label": "차별금지법 제정 찬성",
   "reading_emphasis": [
     {
+      "phrase": "차별금지법이 바꿀 우리 사회의 장면들",
+      "tags": ["h1", "h2"],
+      "tone": "purple"
+    },
+    {
       "phrase": "차별금지법에 관해 자주하는 질문들을 차근차근 살펴봐요.",
       "tags": ["h2"],
       "tone": "yellow"

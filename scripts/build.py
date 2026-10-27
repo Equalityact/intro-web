@@ -28,7 +28,7 @@ def reading_emphasis(tag, value):
     fragments = []
     cursor = 0
     for match in re.finditer(pattern, value):
-        tone = "yellow" if choices[match[0]]["tone"] == "yellow" else "pink"
+        tone = choices[match[0]]["tone"] if choices[match[0]]["tone"] in ("yellow", "purple") else "pink"
         fragments.extend([h(value[cursor:match.start()]), f'<span class="reading-highlight reading-highlight--{tone} reading-highlight--straight" data-underline>{h(match[0])}</span>'])
         cursor = match.end()
     fragments.append(h(value[cursor:]))
