@@ -48,6 +48,8 @@ test('optional metadata supports sheet classifications while old four-column she
   const legacy = parseTimelineCsv(csv(head, ['22대 국회', timeline[5].items[0].title, '본문', '예']), timeline);
   assert.equal(legacy[0].years, '2024~');
   assert.equal(legacy[0].items[0].meta.kind, '입법');
+  const blankYears = parseTimelineCsv(csv([...head, '기간'], ['22대 국회', timeline[5].items[0].title, '본문', '예', '']), timeline);
+  assert.equal(blankYears[0].years, '2024~');
   const updated = parseTimelineCsv(csv(['시기', '분류', '제목', '본문', '공개', '기간'], ['23대 국회', '권고', '국가인권위원회(2028) - 새 권고', '본문', '예', '2028~2032']));
   assert.equal(updated[0].years, '2028~2032');
   assert.deepEqual(updated[0].items[0].meta, { date: '2028', actor: '국가인권위원회', kind: '권고' });
