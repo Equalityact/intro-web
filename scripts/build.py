@@ -16,6 +16,10 @@ EXT = 'target="_blank" rel="noopener noreferrer"'
 h = escape
 
 
+def wavy_emphasis(value, tag="span", tone="pink"):
+    return f'<{tag} class="reading-highlight reading-highlight--{tone}" data-underline>{h(value)}<svg viewBox="0 0 300 14" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path pathLength="1" d="M 2 8 C 22 -1 38 17 57 8 S 91 -1 111 8 S 145 17 166 8 S 201 -1 222 8 S 262 17 298 5"/></svg></{tag}>'
+
+
 def reading_emphasis(tag, value):
     choices = {item["phrase"]: item for item in COPY.get("reading_emphasis", []) if tag in item["tags"]}
     if not choices:
@@ -25,7 +29,7 @@ def reading_emphasis(tag, value):
     cursor = 0
     for match in re.finditer(pattern, value):
         tone = "yellow" if choices[match[0]]["tone"] == "yellow" else "pink"
-        fragments.extend([h(value[cursor:match.start()]), f'<span class="reading-highlight reading-highlight--{tone}" data-underline>{h(match[0])}</span>'])
+        fragments.extend([h(value[cursor:match.start()]), wavy_emphasis(match[0], tone=tone)])
         cursor = match.end()
     fragments.append(h(value[cursor:]))
     return "".join(fragments)
@@ -297,7 +301,7 @@ resources_body += f'''<section class="section" id="library"><div class="wrap"><u
 pillars = "".join(f'<article class="pillar"><div class="role" aria-hidden="true">{index:02d}</div>{prose("h3", title)}{prose("p", body)}</article>' for index, (title, body) in enumerate(HOME["pillars"], 1))
 scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><div class="scene-top"><span class="scene-index" aria-hidden="true">{index:02d}</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>{prose("h3", scene["title"])}<span class="scene-link">더 알아보기 <span class="arrow" aria-hidden="true">→</span></span></a>' for index, (scene, glyph) in enumerate(zip(COPY["scenes"], ["[ ]", "?", "↔", "="]), 1))
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
-  <h1 id="hero-title" data-manuscript><span class="hero-title-line">차별금지법,</span><span class="hero-title-line">모두를 위한 <mark>평등의 기준</mark></span></h1>
+  <h1 id="hero-title" data-manuscript><span class="hero-title-line">차별금지법,</span><span class="hero-title-line">모두를 위한 {wavy_emphasis("평등의 기준", tag="mark")}</span></h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
   <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div></section>
