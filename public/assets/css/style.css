@@ -101,6 +101,7 @@ button:disabled { cursor: default; opacity: .45; }
 @media (prefers-reduced-motion: no-preference) {
   .reading-highlight.underline-ready path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 700ms cubic-bezier(.22, .61, .36, 1) 120ms; }
   .reading-highlight.underline-visible path { stroke-dashoffset: 0; }
+  .hero mark.underline-ready path { transition-delay: 700ms; }
 }
 @media print { .reading-highlight path { stroke-dashoffset: 0 !important; } }
 .reading > p + p, .block-body > p + p, .timeline-card > p + p, .callout > p + p, .block-body > .callout + p { margin-top: var(--space-5); }
