@@ -224,7 +224,8 @@ button:disabled { cursor: default; opacity: .45; }
 .pillar { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px; border-radius: var(--radius-lg); background: var(--color-canvas); }
 .role { display: grid; place-items: center; width: 68px; height: 68px; flex-shrink: 0; border-radius: 50%; background: var(--color-brand); font-weight: 600; }
 .pillar:nth-child(2) .role { background: var(--color-purple); color: var(--color-on-purple); border-radius: var(--radius-lg); }
-.pillar:nth-child(3) .role { background: var(--color-yellow); border-radius: var(--radius-sm); }
+.pillar:nth-child(3) .role { position: relative; isolation: isolate; padding-top: 14px; background: transparent; border-radius: 0; }
+.pillar:nth-child(3) .role::before { content: ""; position: absolute; z-index: -1; top: -4px; left: -8px; width: 84px; height: 76px; background: var(--color-yellow); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 .pillar h3 { font-size: 26px; text-wrap: balance; }
 .area-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .area-list li { display: flex; flex-direction: column; padding: var(--space-5); border: var(--border-component); border-radius: var(--radius-lg); }
