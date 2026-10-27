@@ -100,11 +100,11 @@ button:disabled { cursor: default; opacity: .45; }
 }
 @media print { .pen-circle path { stroke-dashoffset: 0 !important; } }
 @media (prefers-reduced-motion: no-preference) {
-  .reading-highlight.underline-ready path { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 700ms cubic-bezier(.22, .61, .36, 1) 120ms; }
-  .reading-highlight.underline-visible path { stroke-dashoffset: 0; }
-  .hero mark.underline-ready path { transition-delay: 700ms; }
+  .reading-highlight.underline-ready > svg { clip-path: inset(-50% 100% -50% 0); transition: clip-path 900ms linear 120ms; }
+  .reading-highlight.underline-visible > svg { clip-path: inset(-50% -1% -50% 0); }
+  .hero mark.underline-ready > svg { transition-delay: 700ms; }
 }
-@media print { .reading-highlight path { stroke-dashoffset: 0 !important; } }
+@media print { .reading-highlight > svg { clip-path: none !important; } }
 .reading > p + p, .block-body > p + p, .timeline-card > p + p, .callout > p + p, .block-body > .callout + p { margin-top: var(--space-5); }
 .muted, .caption { color: var(--color-muted); }
 .caption { font-size: 14px; line-height: 1.6; margin-top: var(--space-5); }
