@@ -863,9 +863,24 @@
   "why_source_label": "차별금지법 제정 찬성",
   "reading_emphasis": [
     {
-      "phrase": "차별금지법에 관한 질문들",
+      "phrase": "차별금지법 타임라인",
+      "tags": ["h1"],
+      "tone": "purple-soft"
+    },
+    {
+      "phrase": "더 보기",
+      "tags": ["h1"],
+      "tone": "yellow-soft"
+    },
+    {
+      "phrase": "차별금지법이 제정될 수밖에 없는 이유",
       "tags": ["h1"],
       "tone": "yellow"
+    },
+    {
+      "phrase": "차별금지법에 관한 질문들",
+      "tags": ["h1"],
+      "tone": "pink-soft"
     },
     {
       "phrase": "차별금지법이 뭐야?",

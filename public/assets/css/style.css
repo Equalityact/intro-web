@@ -36,8 +36,8 @@
   --color-hero: #000000;
   --diagram-stroke: 2px;
   --diagram-connector: 1.5px;
-  --diagram-radius: 12px;
-  --diagram-label-radius: 4px;
+  --diagram-radius: 0;
+  --diagram-label-radius: 0;
   --diagram-text: 18px;
   --font-title: "Hahmlet", "Batang", serif;
   --font-body: "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
@@ -48,10 +48,10 @@
   --line-height-body: 1.75;
   --content-max: 1200px;
   --reading-max: 720px;
-  --radius-sm: 8px;
-  --radius-lg: 12px;
-  --radius-label: 4px;
-  --radius-pill: 999px;
+  --radius-sm: 0;
+  --radius-lg: 0;
+  --radius-label: 0;
+  --radius-pill: 0;
   --border-component: 2px solid var(--color-ink);
   --space-1: 4px;
   --space-2: 8px;
@@ -89,6 +89,9 @@ button:disabled { cursor: default; opacity: .45; }
 .reading-highlight--straight { display: inline; background-image: linear-gradient(var(--underline-color), var(--underline-color)); background-repeat: no-repeat; background-position: left 94%; background-size: 100% .24em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 .reading-highlight--yellow { --underline-color: var(--color-yellow); }
 .reading-highlight--purple { --underline-color: var(--color-purple); }
+.reading-highlight--pink-soft { --underline-color: var(--color-pink-soft); }
+.reading-highlight--purple-soft { --underline-color: var(--color-purple-soft); }
+.reading-highlight--yellow-soft { --underline-color: var(--color-yellow-soft); }
 .pen-circle { position: relative; display: inline-block; white-space: nowrap; }
 .pen-circle svg { position: absolute; inset: -.12em -.18em; width: calc(100% + .36em); height: calc(100% + .24em); overflow: visible; pointer-events: none; }
 .pen-circle path { fill: none; stroke: var(--color-brand); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
@@ -198,6 +201,16 @@ button:disabled { cursor: default; opacity: .45; }
 .page-hero--pink { background: var(--color-pink-soft); }
 .page-hero--purple { background: var(--color-purple-soft); }
 .page-hero--yellow { background: var(--color-yellow-soft); }
+.page-hero--bright-pink { background: var(--color-brand); color: var(--color-on-brand); }
+.page-hero--bright-pink .eyebrow b { color: inherit; }
+.page-hero--bright-pink :focus-visible { outline-color: var(--color-ink); }
+.page-hero--bright-purple { background: var(--color-purple); color: var(--color-on-purple); }
+.page-hero--bright-purple .eyebrow b { color: inherit; }
+.page-hero--bright-purple .page-toc a { color: var(--color-ink); }
+.page-hero--bright-purple :focus-visible { outline-color: var(--color-yellow); }
+.page-hero--bright-yellow { background: var(--color-yellow); color: var(--color-on-yellow); }
+.page-hero--bright-yellow .eyebrow b { color: inherit; }
+.page-hero--bright-yellow :focus-visible { outline-color: var(--color-ink); }
 .eyebrow { display: block; margin-bottom: var(--space-5); font-size: 14px; font-weight: 500; }
 .eyebrow { display: flex; gap: 12px; align-items: center; }
 .eyebrow b { font-weight: 600; color: var(--color-purple); }
@@ -236,7 +249,7 @@ button:disabled { cursor: default; opacity: .45; }
 .grounds { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 14px; list-style: none; padding: 0; margin: var(--space-6) 0 0; }
 .reading .grounds { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .ground { --ground-fill: var(--color-pink-soft); position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; justify-self: center; width: 100%; max-width: 140px; min-width: 0; aspect-ratio: 1; padding: 12px; font-size: 16px; font-weight: 700; line-height: 1.6; text-align: center; }
-.ground::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ground-fill); border-radius: 8px; }
+.ground::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ground-fill); border-radius: 0; }
 .ground--circle::before { border-radius: 50%; }
 .ground--triangle { padding: 36px 16px 8px; }
 .ground--triangle::before { border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
