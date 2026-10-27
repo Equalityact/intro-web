@@ -83,6 +83,13 @@ button:disabled { cursor: default; opacity: .45; }
 [hidden] { display: none !important; }
 .wrap { width: 100%; max-width: var(--content-max); margin-inline: auto; padding-inline: var(--gutter); }
 .reading { max-width: var(--reading-max); }
+.reading-highlight { --underline-color: var(--color-brand); background-image: linear-gradient(var(--underline-color), var(--underline-color)); background-repeat: no-repeat; background-position: left 94%; background-size: 100% .24em; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.reading-highlight--yellow { --underline-color: var(--color-yellow); }
+.section-title:has(.reading-highlight)::after { display: none; }
+@media (prefers-reduced-motion: no-preference) {
+  .reading-highlight.underline-ready { background-size: 0% .24em; transition: background-size 600ms cubic-bezier(.22, .61, .36, 1) 120ms; }
+  .reading-highlight.underline-visible { background-size: 100% .24em; }
+}
 .reading > p + p, .block-body > p + p, .timeline-card > p + p, .callout > p + p, .block-body > .callout + p { margin-top: var(--space-5); }
 .muted, .caption { color: var(--color-muted); }
 .caption { font-size: 14px; line-height: 1.6; margin-top: var(--space-5); }
@@ -117,6 +124,7 @@ button:disabled { cursor: default; opacity: .45; }
 .btn.on-dark { background: transparent; color: var(--color-base); border-color: var(--color-base); }
 .btn.on-dark:hover { background: var(--color-base); color: var(--color-ink); }
 .btn.small { min-height: 44px; padding: 9px 18px; font-size: 14px; }
+.section-jump-toggle.btn { width: 44px; padding: 0; font-size: 18px; }
 .actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: var(--space-6); }
 .arrow { flex-shrink: 0; font-size: 20px; line-height: 1; }
 .text-link { display: inline-block; color: var(--color-purple); font-weight: 500; text-decoration-thickness: 1px; }
@@ -124,15 +132,25 @@ button:disabled { cursor: default; opacity: .45; }
 
 /* 첫 화면: 가이드의 검정 히어로 예시 */
 .hero { background: var(--color-hero); color: var(--color-base); padding: 112px 0; }
-.hero-grid { display: grid; grid-template-columns: 1.3fr 1fr; align-items: center; gap: 40px; }
-.hero h1 { font-size: 64px; font-weight: var(--font-weight-display); line-height: 1.35; letter-spacing: -.03em; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 3fr) minmax(0, 2fr); align-items: center; gap: 40px; }
+.hero h1 { font-size: 72px; font-weight: var(--font-weight-display); line-height: 1.35; letter-spacing: -.03em; }
 .hero-title-line { display: block; }
 .hero mark { background: var(--color-brand); color: var(--color-on-brand); padding: 0 .12em; border-radius: 8px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hero-lead { white-space: pre-line; max-width: 440px; margin-top: var(--space-5); color: var(--color-line); }
+.hero-lead { white-space: pre-line; max-width: 480px; margin-top: var(--space-5); color: var(--color-line); font-size: 20px; }
 .hero :focus-visible { outline-color: var(--color-yellow); }
 .shape-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 24px; width: 100%; min-width: 0; aspect-ratio: 1; padding: 30px; border-radius: var(--radius-lg); background: var(--color-purple); color: var(--color-on-purple); text-align: center; }
 .shape-panel .eq { color: var(--color-yellow); font-size: 120px; font-weight: 500; line-height: .9; }
-.shape-panel .shape-caption { font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
+.shape-panel .shape-caption { color: var(--color-ink); font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
+.caption-word { display: inline-block; white-space: nowrap; }
+.caption-accessible { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; user-select: none; }
+@keyframes equals-signal {
+  0%, 40%, 80% { opacity: .12; }
+  20%, 60%, 100% { opacity: 1; }
+}
+@keyframes caption-type {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
 
 /* 페이지를 열 때 한 번만 재생하며 문구와 레이아웃은 그대로 유지합니다. */
 @keyframes hero-reveal {
@@ -145,7 +163,8 @@ button:disabled { cursor: default; opacity: .45; }
   .hero-title-line:nth-child(3) { animation-delay: 280ms; }
   .hero-lead { animation: hero-reveal 650ms cubic-bezier(.22, .61, .36, 1) 420ms both; }
   .hero .actions { animation: hero-reveal 650ms cubic-bezier(.22, .61, .36, 1) 560ms both; }
-  .shape-panel { animation: hero-reveal 850ms cubic-bezier(.22, .61, .36, 1) 180ms both; }
+  .shape-panel.sequence-ready .eq { animation: equals-signal 1800ms ease-in-out 200ms both; }
+  .shape-panel.sequence-ready .caption-letter { animation: caption-type 1ms steps(1, end) calc(2150ms + var(--type-step) * 65ms) both; }
 }
 
 /* 구역과 상세 페이지 도입 */
@@ -356,7 +375,8 @@ button:disabled { cursor: default; opacity: .45; }
 @media (min-width: 768px) and (max-width: 1099px) {
   :root { --gutter: 32px; --section-gap: 80px; }
   .hero h1, .page-hero h1 { font-size: 52px; }
-  .hero-grid { grid-template-columns: 1.25fr 1fr; gap: 28px; }
+  .hero h1 { font-size: 56px; }
+  .hero-grid { gap: 28px; }
   .shape-panel { padding: 24px; }
   .block, .stat-hero { grid-template-columns: 1fr; gap: 32px; }
   .join { grid-template-columns: 1fr; }
@@ -384,6 +404,7 @@ button:disabled { cursor: default; opacity: .45; }
   .hero { padding: 64px 0 72px; }
   .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .hero h1, .page-hero h1 { font-size: 36px; }
+  .hero-lead { font-size: 18px; }
   .shape-panel { padding: 24px; }
   .shape-panel .eq { font-size: 88px; }
   .shape-panel .shape-caption { font-size: 24px; }
@@ -447,9 +468,11 @@ button:disabled { cursor: default; opacity: .45; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 @media print {
+  .reading-highlight { background-size: 100% .24em !important; transition: none !important; }
   .site-header, .pager, .toast, .faq-toolbar, .section-jump { display: none; }
   .hero { background: var(--color-base); color: var(--color-ink); }
   .hero-title-line, .hero-lead, .hero .actions, .shape-panel { animation: none !important; }
+  .shape-panel .eq, .shape-panel .caption-letter { animation: none !important; opacity: 1 !important; }
   .comparison-ready .comparison-box.after { animation: none !important; opacity: 1; transform: none; }
   .hero-lead { color: var(--color-ink); }
   .wrap { max-width: none; padding-inline: 0; }

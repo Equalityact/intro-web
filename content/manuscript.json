@@ -859,5 +859,44 @@
     "label": "일상의 변화 / 장벽과 변화",
     "title": "내가 사는 일상에서는\n무엇이 달라질까요?"
   },
-  "why_source_label": "차별금지법 제정 찬성"
+  "why_source_label": "차별금지법 제정 찬성",
+  "reading_emphasis": [
+    {
+      "phrase": "평등의 기준을 세우는 법",
+      "tags": [
+        "h2",
+        "h3"
+      ],
+      "tone": "pink"
+    },
+    {
+      "phrase": "차별에 맞서는 사람의 곁에 섭니다",
+      "tags": [
+        "p"
+      ],
+      "tone": "yellow"
+    },
+    {
+      "phrase": "누구도 혼자 남겨두지 않는 법",
+      "tags": [
+        "h2"
+      ],
+      "tone": "pink"
+    },
+    {
+      "phrase": "많은 시민이",
+      "tags": [
+        "h2",
+        "h3"
+      ],
+      "tone": "yellow"
+    },
+    {
+      "phrase": "국제적 대세",
+      "tags": [
+        "h2"
+      ],
+      "tone": "pink"
+    }
+  ]
 }

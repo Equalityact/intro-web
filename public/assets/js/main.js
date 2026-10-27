@@ -5,6 +5,55 @@
   const $$ = (selector, root = document) => Array.from(root.querySelectorAll(selector));
   document.documentElement.classList.add('js');
 
+  const shapePanel = $('.shape-panel');
+  const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if (shapePanel && !reducedMotion.matches) {
+    const caption = $('.shape-caption', shapePanel);
+    const text = caption.textContent;
+    const accessible = document.createElement('span');
+    accessible.className = 'caption-accessible';
+    accessible.textContent = text;
+    const visual = document.createElement('span');
+    visual.className = 'caption-visual';
+    visual.setAttribute('aria-hidden', 'true');
+    let step = 0;
+    text.split(/(\s+)/).forEach(part => {
+      if (/^\s+$/.test(part)) { visual.append(document.createTextNode(part)); return; }
+      const word = document.createElement('span');
+      word.className = 'caption-word';
+      Array.from(part).forEach(char => {
+        const letter = document.createElement('span');
+        letter.className = 'caption-letter';
+        letter.textContent = char;
+        letter.style.setProperty('--type-step', step++);
+        word.append(letter);
+      });
+      visual.append(word);
+    });
+    caption.replaceChildren(accessible, visual);
+    shapePanel.classList.add('sequence-ready');
+    reducedMotion.addEventListener('change', event => {
+      if (!event.matches) return;
+      shapePanel.classList.remove('sequence-ready');
+      caption.textContent = text;
+    });
+  }
+
+  // Draw emphasis once when the actual phrase enters the reading area.
+  if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
+    const underlineObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('underline-visible');
+        underlineObserver.unobserve(entry.target);
+      });
+    }, { threshold: .55, rootMargin: '0px 0px -12% 0px' });
+    $$('[data-underline]').forEach(phrase => {
+      phrase.classList.add('underline-ready');
+      underlineObserver.observe(phrase);
+    });
+  }
+
   const toast = $('#toast');
   let toastTimer;
   function announce(message) {
@@ -113,6 +162,7 @@
     function setSectionMenu(open, returnFocus = false) {
       sectionList.hidden = !open;
       sectionButton.setAttribute('aria-expanded', String(open));
+      sectionButton.setAttribute('aria-label', open ? '섹션 메뉴 접기' : '섹션 메뉴 열기');
       if (returnFocus) sectionButton.focus();
     }
     sectionButton.hidden = false;

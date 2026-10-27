@@ -16,10 +16,25 @@ EXT = 'target="_blank" rel="noopener noreferrer"'
 h = escape
 
 
+def reading_emphasis(tag, value):
+    choices = {item["phrase"]: item for item in COPY.get("reading_emphasis", []) if tag in item["tags"]}
+    if not choices:
+        return h(value)
+    pattern = "|".join(re.escape(phrase) for phrase in sorted(choices, key=len, reverse=True))
+    fragments = []
+    cursor = 0
+    for match in re.finditer(pattern, value):
+        tone = "yellow" if choices[match[0]]["tone"] == "yellow" else "pink"
+        fragments.extend([h(value[cursor:match.start()]), f'<span class="reading-highlight reading-highlight--{tone}" data-underline>{h(match[0])}</span>'])
+        cursor = match.end()
+    fragments.append(h(value[cursor:]))
+    return "".join(fragments)
+
+
 def prose(tag, value, attrs=""):
     """Mark manuscript text so checks can detect unapproved editorial additions."""
     suffix = f' {attrs}' if attrs else ''
-    return f'<{tag} data-manuscript{suffix}>{h(value)}</{tag}>'
+    return f'<{tag} data-manuscript{suffix}>{reading_emphasis(tag, value)}</{tag}>'
 
 
 def paragraphs(values, attrs=""):
@@ -93,7 +108,7 @@ def layout(filename, title, description, body):
         section_links = "".join(f'<li><a href="#{ident}"><span aria-hidden="true">{index:02d}</span>{prose("span", label)}</a></li>' for index, (ident, label) in enumerate(HOME["section_navigation"], 1))
         section_menu = f'''<nav class="section-jump" aria-label="메인 페이지 섹션">
   <ol id="home-section-links">{section_links}</ol>
-  <button class="btn purple small section-jump-toggle" type="button" aria-controls="home-section-links" aria-expanded="true" hidden>섹션 이동 <span aria-hidden="true">⌃</span></button>
+  <button class="btn purple small section-jump-toggle" type="button" aria-label="섹션 메뉴 접기" aria-controls="home-section-links" aria-expanded="true" hidden><span aria-hidden="true">⌃</span></button>
 </nav>'''
     return f'''<!doctype html>
 <html lang="ko">
