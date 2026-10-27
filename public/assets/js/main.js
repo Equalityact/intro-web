@@ -68,14 +68,18 @@
 
   // Draw emphasis once when the actual phrase enters the reading area.
   if ('IntersectionObserver' in window && !reducedMotion.matches) {
+    let nextGroundReveal = 0;
     const groundsObserver = new IntersectionObserver(entries => {
       const visible = entries.filter(entry => entry.isIntersecting);
       for (let i = visible.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [visible[i], visible[j]] = [visible[j], visible[i]];
       }
-      visible.forEach((entry, index) => {
-        entry.target.style.setProperty('--ground-delay', `${index * 25}ms`);
+      const now = performance.now();
+      visible.forEach(entry => {
+        nextGroundReveal = Math.max(nextGroundReveal, now);
+        entry.target.style.setProperty('--ground-delay', `${Math.round(nextGroundReveal - now)}ms`);
+        nextGroundReveal += 180;
         entry.target.classList.add('ground-visible');
         groundsObserver.unobserve(entry.target);
       });
