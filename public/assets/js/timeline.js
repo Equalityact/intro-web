@@ -43,7 +43,7 @@
     const navigation = document.createDocumentFragment();
     const ids = new Set();
     let count = 0;
-    periods.forEach(period => {
+    periods.forEach((period, index) => {
       if (!/^[a-z][a-z0-9-]*$/.test(period.id) || ids.has(period.id) || typeof period.title !== 'string' || !period.title.trim() || !Array.isArray(period.items) || !period.items.length) throw new Error('Invalid period');
       ids.add(period.id);
       const section = element('section', 'period');
@@ -52,13 +52,28 @@
       const head = element('div', 'period-head');
       const heading = element('h2', '', period.title);
       heading.id = `${period.id}-title`;
-      head.append(heading);
+      const number = element('span', 'period-number', String(index + 1).padStart(2, '0'));
+      number.setAttribute('aria-hidden', 'true');
+      head.append(number, heading);
+      if (period.years) {
+        if (typeof period.years !== 'string') throw new Error('Invalid period dates');
+        head.append(element('span', 'years', period.years));
+      }
       const list = element('ol', 'timeline');
       period.items.forEach(item => {
         if (++count > 1000 || typeof item.title !== 'string' || !item.title.trim() || !Array.isArray(item.paragraphs) || !Array.isArray(item.paragraph_links) || item.paragraph_links.length !== item.paragraphs.length) throw new Error('Invalid event');
         const row = element('li', 'timeline-item');
         const card = element('article', 'timeline-card');
-        card.append(element('h3', '', item.title));
+        const meta = item.meta || {};
+        const metadata = element('div', 'timeline-meta');
+        ['date', 'actor', 'kind'].forEach(key => {
+          if (!meta[key]) return;
+          if (typeof meta[key] !== 'string') throw new Error('Invalid event metadata');
+          metadata.append(element('span', `timeline-${key}`, meta[key]));
+        });
+        const prefix = meta.actor && meta.date ? `${meta.actor}(${meta.date}) - ` : '';
+        const title = prefix && item.title.startsWith(prefix) ? item.title.slice(prefix.length) : item.title;
+        card.append(metadata, element('h3', '', title));
         item.paragraphs.forEach((text, index) => card.append(paragraph(text, item.paragraph_links[index])));
         row.append(card);
         list.append(row);

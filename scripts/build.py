@@ -245,9 +245,16 @@ qna_body = page_hero("qna.html") + f'''<section class="section"><div class="wrap
 </div></section>''' + pager("qna.html")
 
 periods = ""
-for period in COPY["timeline"]:
-    items = "".join(f'<li class="timeline-item"><article class="timeline-card">{prose("h3", item["title"])}{linked_paragraphs(item)}</article></li>' for item in period["items"])
-    periods += f'<section class="period" id="{period["id"]}" aria-labelledby="{period["id"]}-title"><div class="period-head">{prose("h2", period["title"], f'id="{period["id"]}-title"')}</div><ol class="timeline">{items}</ol></section>'
+for index, period in enumerate(COPY["timeline"], 1):
+    items = ""
+    for item in period["items"]:
+        meta = item.get("meta", {})
+        metadata = "".join(prose("span", meta[key], f'class="timeline-{key}"') for key in ("date", "actor", "kind") if meta.get(key))
+        prefix = f'{meta.get("actor", "")}({meta.get("date", "")}) - '
+        title = item["title"].removeprefix(prefix) if meta.get("actor") and meta.get("date") else item["title"]
+        items += f'<li class="timeline-item"><article class="timeline-card"><div class="timeline-meta">{metadata}</div>{prose("h3", title)}{linked_paragraphs(item)}</article></li>'
+    years = prose("span", period["years"], 'class="years"') if period.get("years") else ""
+    periods += f'<section class="period" id="{period["id"]}" aria-labelledby="{period["id"]}-title"><div class="period-head"><span class="period-number" aria-hidden="true">{index:02d}</span>{prose("h2", period["title"], f'id="{period["id"]}-title"')}{years}</div><ol class="timeline">{items}</ol></section>'
 timeline_body = page_hero("timeline.html", toc=[(p["id"], p["title"]) for p in COPY["timeline"]])
 timeline_body += f'<section class="section"><div class="wrap"><div class="timeline-periods" data-timeline>{periods}</div></div></section>' + pager("timeline.html")
 

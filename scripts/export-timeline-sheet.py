@@ -11,7 +11,7 @@ def export_timeline():
     target = ROOT / "content/timeline-sheet.csv"
     with target.open("w", encoding="utf-8-sig", newline="") as output:
         writer = csv.writer(output, lineterminator="\n")
-        writer.writerow(["시기", "제목", "본문", "공개"])
+        writer.writerow(["시기", "분류", "제목", "본문", "공개"])
         for period in copy["timeline"]:
             for item in period["items"]:
                 paragraphs = []
@@ -27,7 +27,7 @@ def export_timeline():
                         cursor = end
                     parts.append(text[cursor:])
                     paragraphs.append("".join(parts))
-                writer.writerow([period["title"], item["title"], "\n\n".join(paragraphs), "예"])
+                writer.writerow([period["title"], item.get("meta", {}).get("kind", ""), item["title"], "\n\n".join(paragraphs), "예"])
     print(f"wrote {target.relative_to(ROOT)}")
 
 

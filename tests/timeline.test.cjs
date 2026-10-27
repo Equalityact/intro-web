@@ -16,6 +16,7 @@ test('import template retains all 11 events and all 37 bracket-specific links ve
   const result = parseTimelineCsv(template, timeline);
   const expected = timeline.map(period => ({ ...period, items: period.items.map(item => ({
     title: item.title,
+    ...(item.meta ? { meta: item.meta } : {}),
     paragraphs: item.paragraphs,
     paragraph_links: item.paragraph_links || item.paragraphs.map(() => []),
   })) }));
@@ -41,6 +42,17 @@ test('new periods follow sheet row order and keep stable anchors after reorderin
   assert.equal(a[0].title, '23대 국회');
   assert.equal(b[0].title, '24대 국회');
   assert.equal(a[0].id, b[1].id);
+});
+
+test('optional metadata supports sheet classifications while old four-column sheets still work', () => {
+  const legacy = parseTimelineCsv(csv(head, ['22대 국회', timeline[5].items[0].title, '본문', '예']), timeline);
+  assert.equal(legacy[0].years, '2024~');
+  assert.equal(legacy[0].items[0].meta.kind, '입법');
+  const updated = parseTimelineCsv(csv(['시기', '분류', '제목', '본문', '공개', '기간'], ['23대 국회', '권고', '국가인권위원회(2028) - 새 권고', '본문', '예', '2028~2032']));
+  assert.equal(updated[0].years, '2028~2032');
+  assert.deepEqual(updated[0].items[0].meta, { date: '2028', actor: '국가인권위원회', kind: '권고' });
+  const hidden = parseTimelineCsv(csv(['시기', '분류', '제목', '본문', '공개'], ['22대 국회', '', timeline[5].items[0].title, '본문', '예']), timeline);
+  assert.equal(hidden[0].items[0].meta.kind, undefined);
 });
 
 test('published rows support multiline paragraphs and exact HTTP/HTTPS links', () => {
