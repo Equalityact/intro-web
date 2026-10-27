@@ -67,6 +67,26 @@
   }
 
   // Draw emphasis once when the actual phrase enters the reading area.
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
+    const groundsObserver = new IntersectionObserver(entries => {
+      const visible = entries.filter(entry => entry.isIntersecting);
+      for (let i = visible.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [visible[i], visible[j]] = [visible[j], visible[i]];
+      }
+      visible.forEach((entry, index) => {
+        entry.target.style.setProperty('--ground-delay', `${index * 25}ms`);
+        entry.target.classList.add('ground-visible');
+        groundsObserver.unobserve(entry.target);
+      });
+    }, { threshold: .15 });
+    $$('.ground').forEach(ground => {
+      ground.classList.add('ground-ready');
+      groundsObserver.observe(ground);
+    });
+  }
+
+  // Draw emphasis once when the actual phrase enters the reading area.
   if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
     const underlineObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {

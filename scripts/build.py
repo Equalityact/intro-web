@@ -1,6 +1,7 @@
 """Render the approved manuscript; keep editorial copy in content/manuscript.json."""
 import json
 import re
+import random
 import sys
 from html import escape
 from pathlib import Path
@@ -62,9 +63,11 @@ def external(url, label, classes=""):
 
 def grounds_html():
     items = []
+    arrangement = random.Random(47)
     for index, value in enumerate(HOME["grounds"]):
-        shape = "triangle" if len(value) <= 4 and index % 3 == 2 else "circle" if len(value) <= 8 and index % 2 == 0 else "square"
-        tone = ("pink", "purple-soft", "yellow", "pink-soft", "purple", "yellow-soft")[index % 6]
+        shapes = ("circle", "square", "triangle") if len(value) <= 4 else ("circle", "square") if len(value) <= 8 else ("square",)
+        shape = arrangement.choice(shapes)
+        tone = arrangement.choice(("pink", "purple-soft", "yellow", "pink-soft", "purple", "yellow-soft"))
         items.append(prose("li", value, f'class="ground ground--{shape} ground--{tone}"'))
     return '<ul class="grounds">' + "".join(items) + "</ul>"
 

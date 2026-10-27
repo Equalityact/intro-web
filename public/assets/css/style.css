@@ -233,11 +233,11 @@ button:disabled { cursor: default; opacity: .45; }
 .callout-title { font-family: var(--font-title); font-size: 26px; line-height: 1.4; font-weight: 600; white-space: pre-line; }
 
 /* 도형: 같은 역할에는 같은 모양과 크기 */
-.grounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 16px; list-style: none; padding: 0; margin: var(--space-6) 0 0; }
-.ground { --ground-fill: var(--color-pink-soft); position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; min-width: 0; aspect-ratio: 1; padding: 20px; font-size: 17px; font-weight: 500; line-height: 1.6; text-align: center; }
+.grounds { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 14px; list-style: none; padding: 0; margin: var(--space-6) 0 0; }
+.ground { --ground-fill: var(--color-pink-soft); position: relative; isolation: isolate; display: flex; align-items: center; justify-content: center; justify-self: center; width: 100%; max-width: 140px; min-width: 0; aspect-ratio: 1; padding: 12px; font-size: 16px; font-weight: 700; line-height: 1.6; text-align: center; }
 .ground::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--ground-fill); border-radius: 8px; }
 .ground--circle::before { border-radius: 50%; }
-.ground--triangle { padding: 46px 24px 12px; }
+.ground--triangle { padding: 36px 16px 8px; }
 .ground--triangle::before { border-radius: 0; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
 .ground--pink { --ground-fill: var(--color-brand); }
 .ground--purple { --ground-fill: var(--color-purple); color: var(--color-on-purple); }
@@ -245,6 +245,11 @@ button:disabled { cursor: default; opacity: .45; }
 .ground--pink-soft { --ground-fill: var(--color-pink-soft); }
 .ground--purple-soft { --ground-fill: var(--color-purple-soft); }
 .ground--yellow-soft { --ground-fill: var(--color-yellow-soft); }
+@media (prefers-reduced-motion: no-preference) {
+  .ground.ground-ready { opacity: 0; transform: translateY(8px) scale(.92); transition: opacity 160ms ease-out var(--ground-delay, 0ms), transform 200ms ease-out var(--ground-delay, 0ms); }
+  .ground.ground-visible { opacity: 1; transform: none; }
+}
+@media print { .ground.ground-ready { opacity: 1; transform: none; } }
 .pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: var(--space-6); }
 .pillar { display: flex; flex-direction: column; align-items: flex-start; gap: 20px; padding: 28px; border-radius: var(--radius-lg); background: var(--color-canvas); }
 .role { display: grid; place-items: center; width: 68px; height: 68px; flex-shrink: 0; border-radius: 50%; background: var(--color-brand); font-weight: 600; }
