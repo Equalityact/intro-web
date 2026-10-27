@@ -187,6 +187,7 @@ button:disabled { cursor: default; opacity: .45; }
 .section.pink-soft { background: var(--color-pink-soft); }
 .page-hero { padding: var(--space-8) 0; background: var(--color-canvas); }
 .page-hero--pink { background: var(--color-pink-soft); }
+.page-hero--purple { background: var(--color-purple-soft); }
 .eyebrow { display: block; margin-bottom: var(--space-5); font-size: 14px; font-weight: 500; }
 .eyebrow { display: flex; gap: 12px; align-items: center; }
 .eyebrow b { font-weight: 600; color: var(--color-purple); }

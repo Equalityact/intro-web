@@ -88,7 +88,8 @@ def page_hero(filename, toc=()):
     lead_html = prose("p", COPY["page_introductions"][filename], 'class="lead"')
     toc_attrs = ' data-timeline-toc' if filename == "timeline.html" else ""
     toc_html = f'<ul class="page-toc" aria-label="이 페이지의 내용"{toc_attrs}>{links}</ul>' if links else ""
-    hero_class = "page-hero page-hero--pink" if filename == "about.html" else "page-hero"
+    hero_tone = {"about.html": "pink", "scenes.html": "purple"}.get(filename)
+    hero_class = f"page-hero page-hero--{hero_tone}" if hero_tone else "page-hero"
     return f'''<section class="{hero_class}"><div class="wrap">
   <p class="eyebrow"><b aria-hidden="true">{number}</b>{prose("span", short)}</p>
   {prose("h1", title)}{lead_html}{toc_html}
