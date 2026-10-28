@@ -243,6 +243,10 @@
     for(const [key,text] of Object.entries(fields)) {
       $$(`[data-home-field="${key}"]`).forEach(node=>{
         node.dataset.manuscriptText=text;
+        if (node.dataset.heroCaptionManaged === 'true') {
+          node.dispatchEvent(new CustomEvent('hero:caption', { detail: { text } }));
+          return;
+        }
         if(key==='recommendation_value'){const match=text.match(/^(\d+)(.*)$/);if(match){node.replaceChildren(document.createTextNode(match[1]),elem('small','',match[2]));return;}}
         decorate(node,node.tagName.toLowerCase(),text);
       });

@@ -35,48 +35,70 @@
     }, { threshold: .6 });
     $$('[data-countup]').forEach(target => countObserver.observe(target));
   }
-  if (shapePanel && !reducedMotion.matches) {
+  if (shapePanel) {
     const caption = $('.shape-caption', shapePanel);
-    const text = caption.textContent;
-    const accessible = document.createElement('span');
-    accessible.className = 'caption-accessible';
-    accessible.textContent = text;
-    const visual = document.createElement('span');
-    visual.className = 'caption-visual';
-    visual.setAttribute('aria-hidden', 'true');
-    let step = 0;
-    text.split(/(\s+)/).forEach(part => {
-      if (/^\s+$/.test(part)) { visual.append(document.createTextNode(part)); return; }
-      const word = document.createElement('span');
-      word.className = 'caption-word';
-      Array.from(part).forEach(char => {
-        const letter = document.createElement('span');
-        letter.className = 'caption-letter';
-        letter.textContent = char;
-        letter.style.setProperty('--type-step', step++);
-        word.append(letter);
-      });
-      visual.append(word);
-    });
-    caption.replaceChildren(accessible, visual);
-    shapePanel.classList.add('sequence-ready');
-    // Keep completed text as ordinary text instead of relying on filled animations
-    // being repainted after the hero leaves and re-enters the viewport.
-    const finishSequence = () => {
+    const typingStartsAt = 2150; // Three 600ms blinks, then a short pause.
+    const letterInterval = 65;
+    const startedAt = performance.now();
+    let text = caption.textContent;
+    let completed = reducedMotion.matches;
+    let finishAt = startedAt;
+    let finishTimer;
+    caption.dataset.heroCaptionManaged = 'true';
+
+    function finishSequence() {
+      completed = true;
+      clearTimeout(finishTimer);
       shapePanel.classList.remove('sequence-ready');
-      caption.textContent = caption.dataset.manuscriptText || text;
-    };
-    const finishedAt = performance.now() + 2150 + step * 65 + 100;
-    setTimeout(finishSequence, 2150 + step * 65 + 100);
+      caption.textContent = text;
+    }
+
+    function typeCaption() {
+      if (completed || reducedMotion.matches) { finishSequence(); return; }
+      const accessible = document.createElement('span');
+      accessible.className = 'caption-accessible';
+      accessible.textContent = text;
+      const visual = document.createElement('span');
+      visual.className = 'caption-visual';
+      visual.setAttribute('aria-hidden', 'true');
+      const elapsed = performance.now() - startedAt;
+      let step = 0;
+      text.split(/(\s+)/).forEach(part => {
+        if (/^\s+$/.test(part)) { visual.append(document.createTextNode(part)); return; }
+        const word = document.createElement('span');
+        word.className = 'caption-word';
+        Array.from(part).forEach(char => {
+          const letter = document.createElement('span');
+          letter.className = 'caption-letter';
+          letter.textContent = char;
+          // A document response can update the text without restarting the equals sign.
+          letter.style.setProperty('--type-delay', `${typingStartsAt + step++ * letterInterval - elapsed}ms`);
+          word.append(letter);
+        });
+        visual.append(word);
+      });
+      caption.replaceChildren(accessible, visual);
+      shapePanel.classList.add('sequence-ready');
+      finishAt = startedAt + typingStartsAt + Math.max(0, step - 1) * letterInterval + 100;
+      clearTimeout(finishTimer);
+      finishTimer = setTimeout(finishSequence, Math.max(0, finishAt - performance.now()));
+    }
+
+    caption.addEventListener('hero:caption', event => {
+      if (typeof event.detail?.text !== 'string' || event.detail.text === text) return;
+      text = event.detail.text;
+      typeCaption();
+    });
+    typeCaption();
+    // Ordinary text remains after playback, including when scrolling back to the hero.
     window.addEventListener('pageshow', () => {
-      if (performance.now() >= finishedAt) finishSequence();
+      if (performance.now() >= finishAt) finishSequence();
     });
     document.addEventListener('visibilitychange', () => {
-      if (!document.hidden && performance.now() >= finishedAt) finishSequence();
+      if (!document.hidden && performance.now() >= finishAt) finishSequence();
     });
     reducedMotion.addEventListener('change', event => {
-      if (!event.matches) return;
-      finishSequence();
+      if (event.matches) finishSequence();
     });
   }
 

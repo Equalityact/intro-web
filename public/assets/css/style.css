@@ -173,8 +173,8 @@ button:disabled { cursor: default; opacity: .45; }
 .caption-word { display: inline-block; white-space: nowrap; }
 .caption-accessible { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; user-select: none; }
 @keyframes equals-signal {
-  0%, 40%, 80% { opacity: .12; }
-  20%, 60%, 100% { opacity: 1; }
+  0%, 33.333%, 66.667%, 100% { opacity: 1; }
+  16.667%, 50%, 83.333% { opacity: .12; }
 }
 @keyframes caption-type {
   from { opacity: 0; }
@@ -193,7 +193,7 @@ button:disabled { cursor: default; opacity: .45; }
   .hero-lead { animation: hero-reveal 650ms cubic-bezier(.22, .61, .36, 1) 420ms both; }
   .hero .actions { animation: hero-reveal 650ms cubic-bezier(.22, .61, .36, 1) 560ms both; }
   .shape-panel.sequence-ready .eq { animation: equals-signal 1800ms ease-in-out 200ms both; }
-  .shape-panel.sequence-ready .caption-letter { animation: caption-type 1ms steps(1, end) calc(2150ms + var(--type-step) * 65ms) both; }
+  .shape-panel.sequence-ready .caption-letter { animation: caption-type 1ms steps(1, end) var(--type-delay, 2150ms) both; }
 }
 
 /* 구역과 상세 페이지 도입 */
