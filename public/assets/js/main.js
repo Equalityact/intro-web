@@ -7,6 +7,34 @@
 
   const shapePanel = $('.shape-panel');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  if ('IntersectionObserver' in window && !reducedMotion.matches) {
+    const countObserver = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        countObserver.unobserve(entry.target);
+        const target = entry.target;
+        const original = target.textContent;
+        const match = original.match(/^(\d+)(.*)$/);
+        if (!match) return;
+        const accessible = document.createElement('span');
+        accessible.className = 'caption-accessible';
+        accessible.textContent = original;
+        const visual = document.createElement('span');
+        visual.setAttribute('aria-hidden', 'true');
+        target.replaceChildren(accessible, visual);
+        const started = performance.now();
+        const animate = now => {
+          const progress = reducedMotion.matches ? 1 : Math.min((now - started) / 1200, 1);
+          visual.textContent = `${Math.round(Number(match[1]) * (1 - (1 - progress) ** 3))}${match[2]}`;
+          if (progress < 1) requestAnimationFrame(animate);
+          else target.textContent = original;
+        };
+        visual.textContent = `0${match[2]}`;
+        requestAnimationFrame(animate);
+      });
+    }, { threshold: .6 });
+    $$('[data-countup]').forEach(target => countObserver.observe(target));
+  }
   if (shapePanel && !reducedMotion.matches) {
     const caption = $('.shape-caption', shapePanel);
     const text = caption.textContent;

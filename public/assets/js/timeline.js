@@ -3,7 +3,7 @@
 
   const container = document.querySelector('[data-timeline]');
   const toc = document.querySelector('[data-timeline-toc]');
-  if (!container || !toc) return;
+  if (!container) return;
   let inFlight = false;
   let previous = '';
 
@@ -92,7 +92,7 @@
 
   async function refresh() {
     if (document.hidden || inFlight) return;
-    if ((container.contains(document.activeElement) || toc.contains(document.activeElement)) && document.activeElement.matches(':focus-visible')) return;
+    if ((container.contains(document.activeElement) || toc?.contains(document.activeElement)) && document.activeElement.matches(':focus-visible')) return;
     inFlight = true;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 10000);
@@ -118,7 +118,7 @@
         top: readingCard.getBoundingClientRect().top,
       };
       container.replaceChildren(fragment);
-      toc.replaceChildren(navigation);
+      toc?.replaceChildren(navigation);
       previous = fingerprint;
       if (hash && !hadHashTarget && document.getElementById(hash)) {
         document.getElementById(hash).scrollIntoView();
