@@ -180,10 +180,16 @@
     const fragment=document.createDocumentFragment();
     data.blocks.forEach((block,index)=>{
       const section=elem('section',`section${index===1?' soft':''}`);section.id=block.id;const id=`${block.id}-title`;section.setAttribute('aria-labelledby',id);
-      const wrap=elem('div','wrap'), grid=elem('div',index===0?'stat-hero':'block'), left=elem('div',index===0?'':'block-head'), right=elem('div',index===0?'reading':'block-body reading');
-      const eyebrow=elem('p','eyebrow');eyebrow.append(elem('b','',String(index+1).padStart(2,'0')));if(block.label)eyebrow.append(document.createTextNode(block.label));left.append(eyebrow,heading('h2',block.title,'section-title',id));
-      if(index===0){paras(left,block.paragraphs);grid.append(left,surveys || right);}
-      else {if(index===2 && recommendations)left.append(recommendations);whyParagraphs(right,block);grid.append(left,right);}
+      const global = block.id === 'global';
+      const wrap=elem('div','wrap'), grid=elem('div',global?'stat-hero editorial-columns':index===0?'stat-hero':'block'), left=elem('div',global?'editorial-title':index===0?'':'block-head'), right=elem('div',global||index===0?'reading':'block-body reading');
+      const eyebrow=elem('p','eyebrow');eyebrow.append(elem('b','',String(index+1).padStart(2,'0')));if(block.label)eyebrow.append(document.createTextNode(block.label));
+      const title=heading('h2',block.title,'section-title',id);
+      if(global){
+        // Keep the count card inside the left content cell, never as an auto-placed grid item.
+        const content=elem('div','editorial-content');content.append(title);if(recommendations)content.append(recommendations);
+        left.append(eyebrow,content);whyParagraphs(right,block);grid.append(left,right);
+      } else if(index===0){left.append(eyebrow,title);paras(left,block.paragraphs);grid.append(left,surveys || right);}
+      else {left.append(eyebrow,title);whyParagraphs(right,block);grid.append(left,right);}
       wrap.append(grid);section.append(wrap);fragment.append(section);
     });
     oldSections[0].before(fragment);oldSections.forEach(section=>section.remove());toc(data.blocks);
