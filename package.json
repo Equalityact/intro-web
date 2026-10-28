@@ -5,12 +5,15 @@
   "description": "차별금지법 안내 사이트 초안",
   "scripts": {
     "generate": "python3 scripts/build.py",
-    "dev": "live-server public --port=3000 --no-browser --middleware=$PWD/scripts/clean-urls.js",
-    "start": "live-server public --port=3000 --middleware=$PWD/scripts/clean-urls.js",
-    "check": "python3 scripts/check.py && node --test tests/timeline.test.cjs",
+    "dev": "node scripts/dev.cjs",
+    "start": "node scripts/dev.cjs",
+    "check": "python3 scripts/check.py && node --test tests/*.test.cjs",
     "export:timeline": "python3 scripts/export-timeline-sheet.py"
   },
   "devDependencies": {
     "live-server": "^1.2.2"
+  },
+  "dependencies": {
+    "htmlparser2": "^10.1.0"
   }
 }

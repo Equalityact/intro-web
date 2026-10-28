@@ -27,7 +27,7 @@
           const progress = reducedMotion.matches ? 1 : Math.min((now - started) / 1200, 1);
           visual.textContent = `${Math.round(Number(match[1]) * (1 - (1 - progress) ** 3))}${match[2]}`;
           if (progress < 1) requestAnimationFrame(animate);
-          else target.textContent = original;
+          else target.textContent = target.dataset.manuscriptText || original;
         };
         visual.textContent = `0${match[2]}`;
         requestAnimationFrame(animate);
@@ -64,7 +64,7 @@
     // being repainted after the hero leaves and re-enters the viewport.
     const finishSequence = () => {
       shapePanel.classList.remove('sequence-ready');
-      caption.textContent = text;
+      caption.textContent = caption.dataset.manuscriptText || text;
     };
     const finishedAt = performance.now() + 2150 + step * 65 + 100;
     setTimeout(finishSequence, 2150 + step * 65 + 100);
@@ -168,6 +168,8 @@
   $$('a', navigation).forEach(link => link.addEventListener('click', () => setMenu(false)));
   setMenu(false);
 
+  let sceneHashChange;
+  function setupScenes() {
   const sceneSelector = $('.scene-selector');
   if (sceneSelector) {
     const tabs = $$('[role="tab"]', sceneSelector);
@@ -214,11 +216,20 @@
       });
     });
     if (sceneFromHash(true) === -1) selectScene(0);
-    window.addEventListener('hashchange', () => sceneFromHash(true));
+    if (sceneHashChange) window.removeEventListener('hashchange', sceneHashChange);
+    sceneHashChange = () => sceneFromHash(true);
+    window.addEventListener('hashchange', sceneHashChange);
   }
 
+  }
+  setupScenes();
+  document.addEventListener('manuscript:scenes', setupScenes);
+
+  let comparisonObserver;
+  function setupComparisons() {
   if ('IntersectionObserver' in window && matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-    const comparisonObserver = new IntersectionObserver(entries => {
+    comparisonObserver?.disconnect();
+    comparisonObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {
         if (!entry.isIntersecting) return;
         entry.target.closest('.scene-comparison').classList.add('comparison-visible');
@@ -230,6 +241,10 @@
       comparisonObserver.observe($('.comparison-box.after', card));
     });
   }
+
+  }
+  setupComparisons();
+  document.addEventListener('manuscript:scenes', setupComparisons);
 
   const sectionJump = $('.section-jump');
   if (sectionJump) {
@@ -296,7 +311,7 @@
     });
   });
 
-  const questions = $$('#faq-list .qa');
+  let questions = $$('#faq-list .qa');
   const search = $('#faq-search');
   const expand = $('#faq-expand');
   function updateExpand() {
@@ -325,9 +340,16 @@
       visible.forEach(question => { question.open = shouldOpen; });
       updateExpand();
     });
-    questions.forEach(question => question.addEventListener('toggle', updateExpand));
+    $('#faq-list').addEventListener('toggle', updateExpand, true);
     filterQuestions();
   }
+
+  document.addEventListener('manuscript:questions', () => {
+    if (!search || !expand) return;
+    questions = $$('#faq-list .qa');
+    filterQuestions();
+    openFromHash();
+  });
 
   // Reveal a linked answer even when the current search hides it.
   function openFromHash() {

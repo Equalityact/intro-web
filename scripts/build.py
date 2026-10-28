@@ -38,6 +38,9 @@ def reading_emphasis(tag, value):
 
 def prose(tag, value, attrs=""):
     """Mark manuscript text so checks can detect unapproved editorial additions."""
+    bound_key = next((key for key, text in HOME.items() if isinstance(text, str) and text == value and key not in ('slogan', 'slogan_lines')), None)
+    if bound_key:
+        attrs += f' data-home-field="{bound_key}"'
     suffix = f' {attrs}' if attrs else ''
     content = reading_emphasis(tag, value)
     if (tag in ("h2", "h3") or 'class="callout-title"' in attrs) and "사회적 합의" in value and "아직" in value:
@@ -122,7 +125,7 @@ def layout(filename, title, description, body):
         for name, _, short, _ in PAGES
     )
     site_title = HOME["name"] if filename == "index.html" else f'{title} · {HOME["name"]}'
-    timeline_script = '<script src="assets/js/timeline.js" defer></script>\n' if filename == "timeline.html" else ""
+    timeline_script = '<script src="assets/js/manuscript.js" defer></script>\n'
     section_menu = ""
     if filename == "index.html":
         section_links = "".join(f'<li><a href="#{ident}"><span aria-hidden="true">{index:02d}</span>{prose("span", label)}</a></li>' for index, (ident, label) in enumerate(HOME["section_navigation"], 1))
@@ -189,7 +192,7 @@ for index, block in enumerate(COPY["about"], 1):
   <div class="block-body">{body}</div>
 </article>'''
 about_body = page_hero("about.html", toc=[(b["id"], b["title"]) for b in COPY["about"]])
-about_body += f'<section class="section"><div class="wrap">{about_blocks}</div></section>' + pager("about.html")
+about_body += f'<section class="section" data-doc-about><div class="wrap">{about_blocks}</div></section>' + pager("about.html")
 
 scene_sections = ""
 scene_tabs = ""
@@ -210,7 +213,7 @@ scenes_body += f'''<section class="section" aria-labelledby="comparison-title"><
 {prose("p", comparison["label"], 'class="eyebrow"')}{prose("h2", comparison["title"], 'class="section-title comparison-title" id="comparison-title"')}
 {prose("p", comparison["hint"], 'class="section-intro muted" id="scene-hint" hidden')}
 <div class="scene-selector" role="tablist" aria-label="일상 장면 선택" aria-describedby="scene-hint" hidden>{scene_tabs}</div>
-<div class="scene-panels">{scene_sections}</div>
+<div class="scene-panels" data-doc-scenes>{scene_sections}</div>
 </div></section>''' + pager("scenes.html")
 
 survey_rows = []
@@ -248,7 +251,7 @@ dots = '<div class="dots" aria-hidden="true">' + "<span></span>" * 14 + "</div>"
 
 
 def recommendation_card(include_title=True):
-    number = f'<p class="big-number" data-manuscript>{h(HOME["recommendation_value"].removesuffix("차례"))}<small>차례</small></p>'
+    number = f'<p class="big-number" data-manuscript data-home-field="recommendation_value">{h(HOME["recommendation_value"].removesuffix("차례"))}<small>차례</small></p>'
     title = prose("h3", HOME["recommendation_title"]) if include_title else ""
     caption = prose("p", HOME["recommendation_caption"], 'class="muted"')
     return f'<div class="recommendations">{number}{title}{caption}{dots}</div>'
@@ -312,7 +315,7 @@ def resource_button(item):
 
 resource_items = "".join(f'<li class="resource">{prose("h2", item["title"])}{prose("p", item["by"], "class=\"by\"")}{paragraphs(item["paragraphs"])}{resource_button(item)}</li>' for item in COPY["resources"])
 resources_body = page_hero("resources.html")
-resources_body += f'''<section class="section" id="library"><div class="wrap"><ul class="resource-list">{resource_items}</ul></div></section>
+resources_body += f'''<section class="section" id="library"><div class="wrap"><ul class="resource-list" data-doc-resources>{resource_items}</ul></div></section>
 <section class="section soft" id="info" aria-labelledby="info-title"><div class="wrap">{prose("h2", "정보", 'class="section-title" id="info-title"')}
 <table class="info-table"><tbody>
   <tr><th scope="row">제작</th><td>{prose("span", "차별금지법제정연대")}</td></tr>

@@ -592,3 +592,11 @@ button:disabled { cursor: default; opacity: .45; }
   .scene-card, .timeline-card, .pillar { break-inside: avoid; }
   body { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
 }
+
+/* Google Docs can add case explanations without changing the comparison design. */
+.comparison-grid--single { grid-template-columns: minmax(0, 1fr); }
+.scene-case-copy { margin-top: 24px; }
+.scene-case-copy > p + p { margin-top: 16px; }
+.document-list { padding-left: 1.4em; margin-block: 16px; }
+.document-list > li + li { margin-top: 8px; }
+.document-list .document-list { margin-block: 8px; }

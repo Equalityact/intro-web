@@ -5,12 +5,17 @@ const path = require('path');
 const envFile = path.resolve(__dirname, '..', '.env');
 if (fs.existsSync(envFile)) process.loadEnvFile(envFile);
 const timeline = require('../api/timeline');
+const manuscript = require('../api/manuscript');
 
 const root = path.resolve(__dirname, '..', 'public');
 
 module.exports = function cleanUrls(req, res, next) {
   const [pathname, query = ''] = req.url.split('?');
   const qs = query ? '?' + query : '';
+  if (pathname === '/api/manuscript') {
+    manuscript(req, res).catch(next);
+    return;
+  }
   if (pathname === '/api/timeline') {
     timeline(req, res).catch(next);
     return;
