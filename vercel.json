@@ -5,7 +5,7 @@
   "trailingSlash": false,
   "git": {
     "deploymentEnabled": {
-      "review/manuscript-update": false
+      "review/manuscript-update": true
     }
   }
 }
