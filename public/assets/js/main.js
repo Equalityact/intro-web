@@ -237,8 +237,10 @@
       });
     }, { threshold: .2, rootMargin: '0px 0px -32px 0px' });
     $$('.scene-comparison').forEach(card => {
+      const after = $('.comparison-box.after', card);
+      if (!after) return;
       card.classList.add('comparison-ready');
-      comparisonObserver.observe($('.comparison-box.after', card));
+      comparisonObserver.observe(after);
     });
   }
 

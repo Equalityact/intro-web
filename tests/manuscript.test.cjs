@@ -12,6 +12,22 @@ test('full manuscript has seven sections, nine questions, 23 scenes, 37 separate
  assert.equal(d.periods.flatMap(p=>p.items.flatMap(i=>i.paragraph_links.flat())).length,37);assert.equal(d.resources.length,8);
  assert.deepEqual(d.resources.map(r=>r.url),known.resources.map(r=>r.url));
 });
+test('resource thumbnails follow the resource link when titles or order change',()=>{
+ const originals=parse(html).resources;
+ assert.ok(originals.every(r=>r.thumbnail && r.thumbnail.width>0 && r.thumbnail.height>0));
+ const next=parse(html.replace('기독교인을 위한 차별금지법 안내서','제목을 변경한 안내서')).resources;
+ assert.deepEqual(next[0].thumbnail,originals[0].thumbnail);
+ for(const r of next)assert.ok(fs.existsSync(require('node:path').join(__dirname,'../public',r.thumbnail.src)));
+});
+test('explicit preview and detail sections preserve wording and source links without repeating the preview',()=>{
+ const d=parse(qnaEdited('<h2>구분된 답변?</h2><p>[요약]</p><p>아니요. 먼저 보이는 문장입니다.</p><p>[자세한 답변]</p><p>이어서 읽는 설명 <a href="https://example.com">출처</a></p>'));
+ const q=d.questions.at(-1);
+ assert.equal(q.previewParagraphs[0].text,'아니요. 먼저 보이는 문장입니다.');
+ assert.equal(q.detailParagraphs[0].text,'이어서 읽는 설명 출처');
+ assert.equal(q.detailParagraphs[0].links[0].url,'https://example.com/');
+ assert.ok(!q.paragraphs.some(p=>p.text.startsWith('[')));
+ assert.throws(()=>parse(qnaEdited('<h2>작성 중?</h2><p>[요약]</p><p>요약만 있습니다.</p><p>[자세한 답변]</p>')));
+});
 test('question additions, multiline answers, link labels, entity decoding, deletion and reordering follow document order',()=>{
  const edited=qnaEdited('<h2>새 질문 &amp; 확인?</h2><p>첫 답변 <a href="https://example.com/?a=1&amp;b=2">출처</a></p><p>둘째 답변</p>');
  const d=parse(edited);assert.equal(d.questions.length,10);const q=d.questions.at(-1);assert.equal(q.question,'새 질문 & 확인?');assert.equal(q.paragraphs.length,2);assert.equal(q.paragraphs[0].links[0].url,'https://example.com/?a=1&b=2');
