@@ -246,8 +246,8 @@ def recommendation_card(include_title=True):
     return f'<div class="recommendations">{number}{title}{caption}{dots}</div>'
 
 
-stats_content = f'''<div class="stat-hero stats-summary section-content"><div>{prose("p", HOME["support_value"], 'class="big-number range" data-countup')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}{recommendation_card()}</div>{surveys}</div>
-<article class="policy-priority stats-policy">{prose("h3", HOME["policy_title"], 'class="callout-title"')}{prose("p", HOME["policy_caption"], 'class="caption"')}</article>'''
+stats_content = f'''<div class="stat-hero stats-summary section-content"><div class="stats-support">{prose("p", HOME["support_value"], 'class="big-number range" data-countup')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}</div>{surveys}
+<article class="policy-priority stats-policy">{prose("h3", HOME["policy_title"], 'class="callout-title"')}{prose("p", HOME["policy_caption"], 'class="caption"')}</article>{recommendation_card()}</div>'''
 
 
 why_sections = ""
@@ -288,7 +288,7 @@ def qa_item(index, question, preview=True):
 
 
 question_list = "".join(qa_item(index, question) for index, question in enumerate(COPY["questions"], 1))
-home_questions = "".join(qa_item(index, question, preview=False) for index, question in enumerate(COPY["questions"][:4], 1))
+home_questions = "".join(qa_item(index, question, preview=False) for index, question in enumerate(COPY["questions"][:5], 1))
 qna_body = page_hero("qna.html") + f'''<section class="section"><div class="wrap">
   <div class="faq-toolbar" hidden><div class="field"><label for="faq-search">질문 검색</label><input type="search" id="faq-search" aria-controls="faq-list" aria-describedby="faq-count"></div><button class="btn small" type="button" id="faq-expand" aria-controls="faq-list" aria-expanded="false">모두 펼치기 <span aria-hidden="true">+</span></button></div>
   <p class="faq-count" id="faq-count" role="status" aria-live="polite">질문 {len(COPY["questions"])}개</p>
@@ -341,7 +341,7 @@ resources_body += f'''<section class="section" id="library"><div class="wrap"><u
 </tbody></table></div></section>'''
 
 pillars = "".join(f'<article class="pillar"><div class="role" aria-hidden="true">{index:02d}</div>{prose("h3", title)}{prose("p", body)}</article>' for index, (title, body) in enumerate(HOME["pillars"], 1))
-scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><div class="scene-top"><span class="scene-index" aria-hidden="true">{index:02d}</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>{prose("h3", scene["title"])}<span class="scene-link">더 알아보기 <span class="arrow" aria-hidden="true">→</span></span></a>' for index, (scene, glyph) in enumerate(zip(COPY["scenes"], ["[ ]", "?", "↔", "="]), 1))
+scene_cards = "".join(f'<a class="scene-card" href="scenes.html#{scene["id"]}"><div class="scene-top"><span class="scene-index" aria-hidden="true">{index:02d}</span><span class="scene-glyph" aria-hidden="true">{glyph}</span></div>{prose("h3", scene["title"])}</a>' for index, (scene, glyph) in enumerate(zip(COPY["scenes"], ["[ ]", "?", "↔", "="]), 1))
 if " ".join(HOME["slogan_lines"]) != HOME["slogan"]:
     raise ValueError("Hero line breaks must preserve the approved slogan")
 slogan_lines = " ".join(
@@ -355,13 +355,13 @@ index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div>
 <a class="hero-scroll" href="#summary-title" aria-label="다음 섹션으로 이동"><svg viewBox="0 0 48 64" aria-hidden="true" focusable="false"><path d="M24 4v52M7 39l17 17 17-17"/></svg></a></section>
 <section class="section" aria-labelledby="summary-title"><div class="wrap">{prose("h2", HOME["summary_title"], 'class="section-title" id="summary-title"')}<div class="pillars">{pillars}</div><div class="section-foot summary-more">{prose("p", HOME["summary_note"], 'class="caption"')}<a class="btn purple" href="about.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
-<section class="section purple-soft" aria-labelledby="scenes-title"><div class="wrap">{prose("h2", PAGES[1][2], 'class="section-title" id="scenes-title"')}<div class="scene-grid">{scene_cards}</div><div class="section-foot"><a class="text-link" href="scenes.html">더 알아보기 →</a></div></div></section>
+<section class="section purple-soft" aria-labelledby="scenes-title"><div class="wrap">{prose("h2", PAGES[1][2], 'class="section-title" id="scenes-title"')}<div class="scene-grid">{scene_cards}</div><div class="section-foot"><a class="btn purple" href="scenes.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
 <section class="section" aria-labelledby="stats-title"><div class="wrap">{prose("h2", HOME["stats_title"], 'class="section-title" id="stats-title"')}
 {stats_content}
 <div class="section-foot"><a class="btn purple" href="why.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
 <section class="section soft" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{home_questions}</div><div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
 <section class="section" id="join" aria-labelledby="join-title"><div class="wrap">{prose("h2", HOME["join_title"], 'class="section-title" id="join-title"')}<div class="join">
-<article class="join-path">{prose("p", HOME["share"])}<div class="actions"><button class="btn small" type="button" data-share hidden>사이트 링크 공유</button>{external(LINKS["leaflet"], HOME["leaflet"], "btn purple small")}</div></article>
+<article class="join-path">{prose("p", HOME["share"])}<div class="actions"><button class="btn small" type="button" data-share hidden>페이지 공유하기</button>{external(LINKS["leaflet"], HOME["leaflet"], "btn purple small")}</div></article>
 <article class="join-path">{prose("p", HOME["newsletter_question"])}{prose("p", HOME["newsletter"])}<div class="actions">{external(LINKS["newsletter"], HOME["newsletter_button"], "btn purple small")}</div></article>
 <article class="join-path">{prose("p", HOME["donate"])}<div class="actions">{external(LINKS["donate"], "후원하기", "btn purple small")}</div></article>
 </div></div></section>'''

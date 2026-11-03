@@ -202,7 +202,7 @@
     const host=home?$('.qa-list-simple'):$('#faq-list');if(!host)return;
     const opened=new Set($$('details[open]',host).map(node=>node.dataset.question || $('.q-title',node)?.textContent));
     const fragment=document.createDocumentFragment();
-    (home?items.slice(0,4):items).forEach((item,index)=>{
+    (home?items.slice(0,5):items).forEach((item,index)=>{
       const detail=elem('details','qa');detail.id=item.id;detail.dataset.question=item.question;detail.open=opened.has(item.question);
       const summary=elem('summary');const copy=elem('span','q-copy');copy.append(elem('span','q-title',item.question));
       let previewParagraphs=item.previewParagraphs, detailParagraphs=item.detailParagraphs;
@@ -299,7 +299,7 @@
       lines.forEach((line,index)=>{const span=elem('span','hero-title-line');if(index===lines.length-1){const mark=elem('mark','reading-highlight reading-highlight--pink',line);mark.setAttribute('data-underline','');mark.append(svgPath('0 0 300 14','M 2 8 C 22 -1 38 17 57 8 S 91 -1 111 8 S 145 17 166 8 S 201 -1 222 8 S 262 17 298 5'));span.append(mark);}else span.textContent=line;fragment.append(span,document.createTextNode(' '));});node.replaceChildren(fragment);
     }
     const pillars=data.blocks.find(block=>block.title==='메인 카드');
-    if(pillars && $('.pillars')){const fragment=document.createDocumentFragment();pillars.children.forEach((item,index)=>{const article=elem('article','pillar');article.append(elem('div','role',String(index+1).padStart(2,'0')),heading('h3',item.title));paras(article,item.paragraphs);fragment.append(article);});$('.pillars').replaceChildren(fragment);}
+    if(pillars && $('.pillars')){const fragment=document.createDocumentFragment();pillars.children.forEach((item,index)=>{const article=elem('article','pillar');article.append(elem('div','role',String(index+1).padStart(2,'0')),heading('h3',item.title.replace(/^평등의 기준을\s+세우는 법$/, '평등의 기준을\n세우는 법').replace(/^차별 없는 사회,\s*/, '차별 없는 사회,\n')));paras(article,item.paragraphs);fragment.append(article);});$('.pillars').replaceChildren(fragment);}
     const surveys=data.blocks.find(block=>block.title==='여론조사');
     if(surveys && $('.home-survey')) {
       const host=$('.home-survey'),fragment=document.createDocumentFragment();fragment.append(heading('h3',fields.source_label||'출처'));
@@ -335,7 +335,7 @@
     if(page==='about')about(current);else if(page==='scenes')scenes(current);else if(page==='why')why(current);else if(page==='qna')questions(data.questions);else if(page==='timeline')timeline(data.periods);else if(page==='resources')resources(data.resources);
     if(page==='index') {
       questions(data.questions,true);
-      const host=$('.scene-grid');if(host){const fragment=document.createDocumentFragment();data.pages.scenes.blocks.forEach((item,index)=>{const a=elem('a','scene-card');a.href=`scenes.html#${item.id}`;const top=elem('div','scene-top');top.append(elem('span','scene-index',String(index+1).padStart(2,'0')),elem('span','scene-glyph',['[ ]','?','↔','='][index%4]));a.append(top,heading('h3',item.title),elem('span','scene-link','더 알아보기 →'));fragment.append(a);});host.replaceChildren(fragment);}
+      const host=$('.scene-grid');if(host){const fragment=document.createDocumentFragment();data.pages.scenes.blocks.forEach((item,index)=>{const a=elem('a','scene-card');a.href=`scenes.html#${item.id}`;const top=elem('div','scene-top');top.append(elem('span','scene-index',String(index+1).padStart(2,'0')),elem('span','scene-glyph',['[ ]','?','↔','='][index%4]));a.append(top,heading('h3',item.title));fragment.append(a);});host.replaceChildren(fragment);}
     }
     information(data.info);mainPage(data.pages.home);effects(document);
   }

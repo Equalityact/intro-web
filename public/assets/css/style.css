@@ -291,7 +291,7 @@ button:disabled { cursor: default; opacity: .45; }
 .pillar:nth-child(2) .role { background: var(--color-purple); color: var(--color-on-purple); border-radius: var(--radius-lg); }
 .pillar:nth-child(3) .role { position: relative; isolation: isolate; padding-top: 14px; background: transparent; border-radius: 0; }
 .pillar:nth-child(3) .role::before { content: ""; position: absolute; z-index: -1; top: -4px; left: -8px; width: 84px; height: 76px; background: var(--color-yellow); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
-.pillar h3 { font-size: 26px; text-wrap: balance; }
+.pillar h3 { font-size: 26px; text-wrap: balance; white-space: pre-line; }
 .area-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .area-list li { display: flex; flex-direction: column; padding: var(--space-5); border: var(--border-component); border-radius: var(--radius-lg); }
 .area-list b { display: block; margin-bottom: 8px; font-family: var(--font-title); font-size: 24px; font-weight: 600; line-height: 1.4; }
@@ -361,10 +361,18 @@ button:disabled { cursor: default; opacity: .45; }
 .why-closing { margin-top: 48px; }
 .why-closing .callout-title { white-space: normal; }
 @media (max-width: 1099px) { .why-layout { grid-template-columns: 1fr; gap: 32px; } }
-.stats-summary { align-items: stretch; }
+.stats-summary { align-items: stretch; grid-template-areas: "support survey" "international survey" "policy policy"; row-gap: 32px; }
+.stats-summary > .stats-support { grid-area: support; }
+.stats-summary > .survey { grid-area: survey; }
+.stats-summary > .recommendations { grid-area: international; margin-top: 0; }
+.stats-summary > .stats-policy { grid-area: policy; margin-top: 0; }
 .stats-summary > div:first-child { display: flex; flex-direction: column; }
 .stats-summary > div:first-child > .caption { margin-bottom: var(--space-6); }
 .stats-summary .recommendations { margin-top: auto; }
+@media (max-width: 1099px) {
+  .stat-hero.stats-summary { grid-template-columns: minmax(0, 1fr); grid-template-areas: "support" "survey" "policy" "international"; }
+  .stats-summary > .recommendations { margin-top: 0; }
+}
 @media (min-width: 1100px) {
   .stats-summary > .survey { margin-top: clamp(8px, 1vw, 12.8px); }
 }
