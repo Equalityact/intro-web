@@ -7,6 +7,70 @@
 
   const shapePanel = $('.shape-panel');
   const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+  function spaceBodyBreaks() {
+    const makeBreak = () => {
+      const gap = document.createElement('span');
+      gap.className = 'body-soft-break';
+      gap.textContent = '\n';
+      return gap;
+    };
+    $$('#main p:not(.callout-title):not(.shape-caption)').forEach(paragraph => {
+      $$('br', paragraph).forEach(br => br.replaceWith(makeBreak()));
+      const walker = document.createTreeWalker(paragraph, NodeFilter.SHOW_TEXT);
+      const nodes = [];
+      while (walker.nextNode()) {
+        const node = walker.currentNode;
+        if (node.textContent.includes('\n') && !node.parentElement.closest('.body-soft-break,svg')) nodes.push(node);
+      }
+      nodes.forEach(node => {
+        const fragment = document.createDocumentFragment();
+        node.textContent.split('\n').forEach((line, index) => {
+          if (index) fragment.append(makeBreak());
+          fragment.append(document.createTextNode(line));
+        });
+        node.replaceWith(fragment);
+      });
+    });
+  }
+  spaceBodyBreaks();
+  document.addEventListener('manuscript:updated', spaceBodyBreaks);
+  let timelineFrame = 0;
+  function updateHomeTimeline() {
+    timelineFrame = 0;
+    const stage = $('.home-timeline-stage'), rail = $('.home-timeline-scroll');
+    if (!stage || !rail) return;
+    const steps = $$('.home-timeline-step', stage);
+    const mobile = matchMedia('(max-width: 1099px)').matches;
+    const enabled = !reducedMotion.matches && !mobile;
+    stage.classList.toggle('scroll-driven', enabled);
+    stage.classList.toggle('line-visible', stage.getBoundingClientRect().top < innerHeight * .85);
+    const distance = Math.max(1, stage.offsetHeight - rail.offsetHeight);
+    const progress = Math.max(0, Math.min(1, (80 - stage.getBoundingClientRect().top) / distance));
+    const active = Math.min(steps.length - 1, Math.floor(progress * (steps.length + 2)) - 1);
+    steps.forEach((step, index) => {
+      const visible = reducedMotion.matches || (mobile ? step.getBoundingClientRect().top < innerHeight * .88 : index <= active);
+      step.classList.toggle('reveal-ready', !reducedMotion.matches);
+      step.classList.toggle('is-visible', visible);
+      step.inert = !visible;
+    });
+    rail.scrollLeft = 0;
+    $$('.home-timeline-step h3, .home-timeline-step h4').forEach(title => {
+      title.style.fontSize = '';
+      if (!mobile && title.scrollWidth > title.clientWidth) {
+        const size = parseFloat(getComputedStyle(title).fontSize);
+        title.style.fontSize = `${size * title.clientWidth / title.scrollWidth}px`;
+      }
+    });
+  }
+  function queueHomeTimeline() {
+    if (!timelineFrame) timelineFrame = requestAnimationFrame(updateHomeTimeline);
+  }
+  queueHomeTimeline();
+  document.fonts.ready.then(queueHomeTimeline);
+  window.addEventListener('scroll', queueHomeTimeline, { passive: true });
+  window.addEventListener('resize', queueHomeTimeline);
+  reducedMotion.addEventListener('change', queueHomeTimeline);
+  document.addEventListener('manuscript:home-timeline', queueHomeTimeline);
   if ('IntersectionObserver' in window && !reducedMotion.matches) {
     const countObserver = new IntersectionObserver(entries => {
       entries.forEach(entry => {

@@ -348,6 +348,16 @@ slogan_lines = " ".join(
     f'<span class="hero-title-line">{wavy_emphasis(line, tag="mark") if index == len(HOME["slogan_lines"]) - 1 else h(line)}</span>'
     for index, line in enumerate(HOME["slogan_lines"])
 )
+def home_event_title(item):
+    meta = item.get("meta", {})
+    prefix = f'{meta.get("actor", "")}({meta.get("date", "")}) - '
+    return item["title"].removeprefix(prefix) if meta.get("actor") and meta.get("date") else item["title"]
+
+
+home_timeline = "".join(
+    f'<li class="home-timeline-step"><a href="timeline.html#{period["id"]}">{prose("span", period.get("years", ""), 'class="home-timeline-years"')}{prose("h3", period["title"])}<ul>{"".join("<li>" + prose("h4", home_event_title(item)) + "</li>" for item in period["items"])}</ul></a></li>'
+    for period in COPY["timeline"]
+)
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
   <h1 id="hero-title" data-manuscript>{slogan_lines}</h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
@@ -359,7 +369,8 @@ index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="
 {stats_content}
 <div class="section-foot"><a class="btn purple" href="why.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
 <section class="section soft" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{home_questions}</div><div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
-<section class="section" id="join" aria-labelledby="join-title"><div class="wrap">{prose("h2", HOME["join_title"], 'class="section-title" id="join-title"')}<div class="join">
+<section class="section home-timeline-section" aria-labelledby="home-timeline-title"><div class="wrap">{prose("h2", "타임라인", 'class="section-title" id="home-timeline-title"')}<div class="home-timeline-stage section-content"><div class="home-timeline-scroll" tabindex="0" role="region" aria-label="수평 타임라인"><ol class="home-timeline" data-home-timeline>{home_timeline}</ol></div></div><div class="section-foot"><a class="btn purple" href="timeline.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
+<section class="section pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">{prose("h2", HOME["join_title"], 'class="section-title" id="join-title"')}<div class="join">
 <article class="join-path">{prose("p", HOME["share"])}<div class="actions"><button class="btn small" type="button" data-share hidden>페이지 공유하기</button>{external(LINKS["leaflet"], HOME["leaflet"], "btn purple small")}</div></article>
 <article class="join-path">{prose("p", HOME["newsletter_question"])}{prose("p", HOME["newsletter"])}<div class="actions">{external(LINKS["newsletter"], HOME["newsletter_button"], "btn purple small")}</div></article>
 <article class="join-path">{prose("p", HOME["donate"])}<div class="actions">{external(LINKS["donate"], "후원하기", "btn purple small")}</div></article>
