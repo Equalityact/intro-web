@@ -127,7 +127,7 @@ button:disabled { cursor: default; opacity: .45; }
 /* 메인 페이지 섹션 바로가기 */
 .section-jump { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; margin: 24px var(--gutter); }
 .js .section-jump { position: fixed; right: max(16px, env(safe-area-inset-right)); bottom: calc(24px + env(safe-area-inset-bottom)); z-index: 40; margin: 0; }
-.section-jump ol { width: 152px; max-height: calc(100dvh - 180px); overflow-y: auto; overscroll-behavior: contain; list-style: none; margin: 0; padding: 8px; background: var(--color-base); border: var(--border-component); border-radius: var(--radius-lg); }
+.section-jump ol { width: 184px; max-height: calc(100dvh - 180px); overflow-y: auto; overscroll-behavior: contain; list-style: none; margin: 0; padding: 8px; background: var(--color-base); border: var(--border-component); border-radius: var(--radius-lg); }
 .section-jump a { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; text-decoration: none; }
 .section-jump a > span:first-child { font-size: 11px; font-variant-numeric: tabular-nums; }
 @media (max-width: 1439px) { .section-jump { display: none; } }
@@ -169,7 +169,7 @@ button:disabled { cursor: default; opacity: .45; }
 .shape-panel .eq { color: var(--color-yellow); font-size: 120px; font-weight: 500; line-height: .9; }
 .shape-panel .shape-caption { color: var(--color-on-purple); font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
 @media (min-width: 768px) {
-  .hero-grid > .shape-panel { width: 88%; transform: translate(-24px, -40px); }
+  .hero-grid > .shape-panel { width: 88%; transform: translateX(-24px); }
 }
 .caption-word { display: inline-block; white-space: nowrap; }
 .caption-accessible { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; user-select: none; }

@@ -351,7 +351,6 @@ slogan_lines = " ".join(
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>
   <h1 id="hero-title" data-manuscript>{slogan_lines}</h1>
   {prose("p", HOME["description"], 'class="hero-lead"')}
-  <div class="actions"><a class="btn purple" href="about.html">알아보기 <span class="arrow" aria-hidden="true">→</span></a><a class="btn on-dark" href="qna.html">질문 살펴보기 <span class="arrow" aria-hidden="true">→</span></a></div>
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div>
 <a class="hero-scroll" href="#summary-title" aria-label="다음 섹션으로 이동"><svg viewBox="0 0 48 64" aria-hidden="true" focusable="false"><path d="M24 4v52M7 39l17 17 17-17"/></svg></a></section>
 <section class="section" aria-labelledby="summary-title"><div class="wrap">{prose("h2", HOME["summary_title"], 'class="section-title" id="summary-title"')}<div class="pillars">{pillars}</div><div class="section-foot summary-more">{prose("p", HOME["summary_note"], 'class="caption"')}<a class="btn purple" href="about.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
