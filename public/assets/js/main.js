@@ -310,6 +310,16 @@
   }
   setupScenes();
   document.addEventListener('manuscript:scenes', setupScenes);
+  document.addEventListener('toggle', event => {
+    const card = event.target;
+    if (!(card instanceof HTMLDetailsElement) || !card.matches('.scene-case-disclosure') || !card.open) return;
+    $$('.scene-case-disclosure[open]').forEach(other => {
+      if (other !== card) other.open = false;
+    });
+    requestAnimationFrame(() => {
+      if (card.open) card.scrollIntoView({ block: 'start', behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+    });
+  }, true);
 
   let comparisonObserver;
   function setupComparisons() {

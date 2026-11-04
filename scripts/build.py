@@ -72,7 +72,7 @@ def grounds_html():
         shape = arrangement.choice(shapes)
         tone = arrangement.choice(("pink", "purple-soft", "yellow", "pink-soft", "purple", "yellow-soft"))
         length_class = " ground--long" if len(value) > 8 else " ground--medium" if len(value) > 4 else ""
-        label = '<span data-manuscript>성별<br>정체성</span>' if value == "성별정체성" else prose("span", value)
+        label = '<span class="ground-label--gender" data-manuscript>성별<br>정체성</span>' if value == "성별정체성" else prose("span", value)
         items.append(f'<li class="ground ground--{shape} ground--{tone}{length_class}">{label}</li>')
     return '<ul class="grounds">' + "".join(items) + "</ul>"
 
@@ -196,7 +196,8 @@ for scene in COPY["scenes"]:
         cards += f'''<article class="scene-comparison" aria-labelledby="compare-{sid}-{index}">
   {prose("h4", after, f'class="scene-case-title" id="compare-{sid}-{index}"')}
 </article>'''
-    scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{prose("h3", scene["title"], f'class="scene-area-title" id="{sid}-title"')}{cards}</section>'
+    card_class = "scene-cards"
+    scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{prose("h3", scene["title"], f'class="scene-area-title" id="{sid}-title"')}<div class="{card_class}">{cards}</div></section>'
 scenes_body = page_hero("scenes.html", [(s["id"], s["title"]) for s in COPY["scenes"]])
 scenes_body += f'''<section class="section" aria-labelledby="comparison-title"><div class="wrap">
 {prose("h2", comparison["title"], 'class="section-title comparison-title" id="comparison-title"')}
@@ -250,6 +251,13 @@ stats_content = f'''<div class="stat-hero stats-summary section-content"><div cl
 <article class="policy-priority stats-policy">{prose("h3", HOME["policy_title"], 'class="callout-title"')}{prose("p", HOME["policy_caption"], 'class="caption"')}</article>{recommendation_card()}</div>'''
 
 
+def why_photo(block):
+    photo = block.get("photo")
+    if not photo:
+        return ""
+    return f'<figure class="why-photo"><img src="{h(photo["src"])}" width="{photo["width"]}" height="{photo["height"]}" alt="{h(photo["caption"])}" loading="lazy" decoding="async">{prose("figcaption", photo["caption"])}</figure>'
+
+
 why_sections = ""
 for index, block in enumerate(COPY["why"]):
     title = prose("h2", block["title"], f'class="section-title" id="{block["id"]}-title"')
@@ -269,6 +277,11 @@ for index, block in enumerate(COPY["why"]):
 <div class="callout section-content why-closing">{prose("p", closing["title"], 'class="callout-title"')}{prose("p", closing["body"])}</div>'''
     else:
         body = title + body
+    photo = why_photo(block)
+    if index == 2:
+        body = body.replace('<div class="callout section-content why-closing">', photo + '<div class="callout section-content why-closing">')
+    else:
+        body += photo
     why_sections += f'<section class="section{" soft" if index == 1 else ""}" id="{block["id"]}" aria-labelledby="{block["id"]}-title"><div class="wrap">{body}</div></section>'
 why_body = page_hero("why.html", toc=[(b["id"], b["label"]) for b in COPY["why"]]) + why_sections
 
@@ -300,7 +313,7 @@ for index, period in enumerate(COPY["timeline"], 1):
     items = ""
     for item in period["items"]:
         meta = item.get("meta", {})
-        metadata = "".join(prose("span", meta[key], f'class="timeline-{key}"') for key in ("date", "actor", "kind") if meta.get(key))
+        metadata = "".join(prose("span", value.strip(), f'class="timeline-{key}"') for key in ("date", "actor", "kind") if meta.get(key) for value in (meta[key].split("/") if key == "kind" else [meta[key]]))
         prefix = f'{meta.get("actor", "")}({meta.get("date", "")}) - '
         title = item["title"].removeprefix(prefix) if meta.get("actor") and meta.get("date") else item["title"]
         items += f'<li class="timeline-item"><article class="timeline-card"><div class="timeline-meta">{metadata}</div>{prose("h3", title)}{linked_paragraphs(item)}</article></li>'
@@ -355,7 +368,7 @@ def home_event_title(item):
 
 
 home_timeline = "".join(
-    f'<li class="home-timeline-step"><a href="timeline.html#{period["id"]}">{prose("span", period.get("years", ""), 'class="home-timeline-years"')}{prose("h3", period["title"])}<ul>{"".join("<li>" + prose("h4", home_event_title(item)) + "</li>" for item in period["items"])}</ul></a></li>'
+    f'<li class="home-timeline-step"><a href="timeline.html#{period["id"]}">{prose("span", period.get("years", ""), 'class="home-timeline-years"')}{prose("h3", period["title"])}<ul>{"".join("<li>" + prose("h4", line) + "</li>" for item in period["items"] for line in home_event_title(item).splitlines())}</ul></a></li>'
     for period in COPY["timeline"]
 )
 index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="wrap hero-grid"><div>

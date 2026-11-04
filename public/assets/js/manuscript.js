@@ -99,7 +99,12 @@
     items.forEach((text,index) => {
       const shape = text.length <= 4 && index % 3 === 0 ? 'triangle' : text.length <= 8 && index % 2 ? 'circle' : 'square';
       const li = elem('li', `ground ground--${shape} ground--${tones[(index * 7 + Math.floor(index / 3)) % 6]}${text.length > 8 ? ' ground--long' : text.length > 4 ? ' ground--medium' : ''}`);
-      li.append(elem('span', '', text)); list.append(li);
+      const label = elem('span', '', text);
+      if (text.replace(/\s/g, '') === '성별정체성') {
+        label.className = 'ground-label--gender';
+        label.replaceChildren(document.createTextNode('성별'), document.createElement('br'), document.createTextNode('정체성'));
+      }
+      li.append(label); list.append(li);
     });
     return list;
   }
@@ -139,6 +144,7 @@
     data.blocks.forEach((area,index) => {
       const tab = elem('button','',area.title);tab.type='button';tab.id=`tab-${area.id}`;tab.setAttribute('role','tab');tab.setAttribute('aria-controls',area.id);tab.setAttribute('aria-selected','false');tab.tabIndex=-1;tabs.append(tab);
       const panel = elem('section','scene-panel');panel.id=area.id;panel.setAttribute('aria-labelledby',`${area.id}-title`);panel.append(heading('h3',area.title,'scene-area-title',`${area.id}-title`));paras(panel,area.paragraphs);
+      const cards=elem('div','scene-cards');
       area.children.forEach((item,at) => {
         const hasDetails=item.paragraphs.length>0;
         const article = elem(hasDetails?'details':'article',`scene-comparison${hasDetails?' scene-case-disclosure':''}`); const id=`compare-${area.id}-${at+1}`;article.setAttribute('aria-labelledby',id);
@@ -147,8 +153,8 @@
           const summary=elem('summary','scene-case-toggle');const toggle=elem('span','scene-case-icon');toggle.setAttribute('aria-hidden','true');summary.append(title,toggle);
           article.append(summary,paras(elem('div','scene-case-copy reading'),item.paragraphs));
         }else article.append(title);
-        panel.append(article);
-      });fragment.append(panel);
+        cards.append(article);
+      });panel.append(cards);fragment.append(panel);
     });host.replaceChildren(fragment);selector.replaceChildren(tabs);toc(data.blocks);
     document.dispatchEvent(new CustomEvent('manuscript:scenes',{detail:{selected:current}}));
   }
@@ -190,9 +196,14 @@
       const section=elem('section',`section${index===1?' soft':''}`);section.id=block.id;const id=`${block.id}-title`;section.setAttribute('aria-labelledby',id);
       const wrap=elem('div','wrap'), grid=elem('div','why-layout'), left=elem('div','why-heading'), right=elem('div','why-content reading');
       left.append(heading('h2',block.title,'section-title',id));
-      if(index===0){paras(left,block.paragraphs);grid.append(left,surveys || right);}
+      if(index===0){const copy=elem('div','reading');paras(copy,block.paragraphs);left.append(copy);grid.append(left,surveys || right);}
       else {if(index===2 && recommendations)right.append(recommendations);whyParagraphs(right,block);grid.append(left,right);}
       wrap.append(grid);
+      if(block.photo){
+        const figure=elem('figure','why-photo'),img=elem('img');
+        img.src=block.photo.src;img.alt=block.photo.caption;img.width=block.photo.width;img.height=block.photo.height;img.loading='lazy';img.decoding='async';
+        figure.append(img,elem('figcaption','',block.photo.caption));wrap.append(figure);
+      }
       if(index===2){const closing=$('.why-content > .callout',grid);if(closing){closing.classList.add('why-closing');wrap.append(closing);}}
       section.append(wrap);fragment.append(section);
     });
@@ -237,7 +248,10 @@
       head.append(elem('span','period-number',String(index+1).padStart(2,'0')),heading('h2',period.title,'',`${period.id}-title`));if(period.years)head.append(elem('span','years',period.years));
       const list=elem('ol','timeline');period.items.forEach(item=>{
         const row=elem('li',`timeline-item${item.color?' timeline-color-'+item.color:''}`),card=elem('article','timeline-card'),meta=elem('div','timeline-meta');
-        for(const key of ['date','actor','kind'])if(item.meta?.[key])meta.append(elem('span',`timeline-${key}`,item.meta[key]));
+        for(const key of ['date','actor','kind'])if(item.meta?.[key]){
+          const values=key==='kind'?item.meta[key].split('/'): [item.meta[key]];
+          values.forEach(value=>meta.append(elem('span',`timeline-${key}`,value.trim())));
+        }
         const prefix=item.meta?.actor&&item.meta?.date?`${item.meta.actor}(${item.meta.date}) - `:'';
         card.append(meta,heading('h3',prefix&&item.title.startsWith(prefix)?item.title.slice(prefix.length):item.title));
         paras(card,item.paragraphs.map((text,i)=>({text,links:item.paragraph_links[i],list:item.paragraph_lists?.[i]})));row.append(card);list.append(row);
@@ -253,7 +267,7 @@
       const list=elem('ul');period.items.forEach(item=>{
         const prefix=item.meta?.actor&&item.meta?.date?`${item.meta.actor}(${item.meta.date}) - `:'';
         const title=prefix&&item.title.startsWith(prefix)?item.title.slice(prefix.length):item.title;
-        const li=elem('li');li.append(heading('h4',title));list.append(li);
+        title.split('\n').forEach(line=>{const li=elem('li');li.append(heading('h4',line));list.append(li);});
       });
       a.append(list);row.append(a);fragment.append(row);
     });host.replaceChildren(fragment);document.dispatchEvent(new Event('manuscript:home-timeline'));

@@ -22,7 +22,7 @@ test('optional sheet color maps only approved values and preserves content and l
   }
 });
 
-test('import template retains all 11 events and all 37 bracket-specific links verbatim', () => {
+test('import template retains all 10 events and all 37 bracket-specific links verbatim', () => {
   const result = parseTimelineCsv(template, timeline);
   const expected = timeline.map(period => ({ ...period, items: period.items.map(item => ({
     title: item.title,
@@ -32,7 +32,7 @@ test('import template retains all 11 events and all 37 bracket-specific links ve
   })) }));
   assert.deepEqual(result, expected);
   const items = result.flatMap(period => period.items);
-  assert.equal(items.length, 11);
+  assert.equal(items.length, 10);
   assert.equal(items.flatMap(item => item.paragraph_links.flat()).length, 37);
 });
 
