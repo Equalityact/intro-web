@@ -35,12 +35,27 @@
   spaceBodyBreaks();
   document.addEventListener('manuscript:updated', spaceBodyBreaks);
   let timelineFrame = 0;
+  let timelineLayoutDirty = true;
   function updateHomeTimeline() {
     timelineFrame = 0;
     const stage = $('.home-timeline-stage'), rail = $('.home-timeline-scroll');
     if (!stage || !rail) return;
     const steps = $$('.home-timeline-step', stage);
-    const mobile = matchMedia('(max-width: 1099px)').matches;
+    if (timelineLayoutDirty) {
+      stage.classList.remove('is-vertical');
+      stage.style.setProperty('--home-timeline-columns', String(steps.length + 1));
+      stage.style.removeProperty('--home-timeline-row');
+      let vertical = matchMedia('(max-width: 1599px)').matches;
+      if (!vertical) {
+        const maxCardHeight = Math.max(0, ...steps.map(step => $('a', step).getBoundingClientRect().height));
+        const row = Math.max(250, Math.ceil(maxCardHeight + 36));
+        vertical = row * 2 + 48 > innerHeight - 112;
+        if (!vertical) stage.style.setProperty('--home-timeline-row', `${row}px`);
+      }
+      stage.classList.toggle('is-vertical', vertical);
+      timelineLayoutDirty = false;
+    }
+    const mobile = stage.classList.contains('is-vertical');
     const enabled = !reducedMotion.matches && !mobile;
     stage.classList.toggle('scroll-driven', enabled);
     stage.classList.toggle('line-visible', stage.getBoundingClientRect().top < innerHeight * .85);
@@ -54,15 +69,10 @@
       step.inert = !visible;
     });
     rail.scrollLeft = 0;
-    $$('.home-timeline-step h3, .home-timeline-step h4').forEach(title => {
-      title.style.fontSize = '';
-      if (!mobile && title.scrollWidth > title.clientWidth) {
-        const size = parseFloat(getComputedStyle(title).fontSize);
-        title.style.fontSize = `${size * title.clientWidth / title.scrollWidth}px`;
-      }
-    });
+
   }
-  function queueHomeTimeline() {
+  function queueHomeTimeline(event) {
+    if (!event || event.type !== 'scroll') timelineLayoutDirty = true;
     if (!timelineFrame) timelineFrame = requestAnimationFrame(updateHomeTimeline);
   }
   queueHomeTimeline();
