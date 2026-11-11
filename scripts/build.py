@@ -132,13 +132,22 @@ def layout(filename, title, description, body):
 <meta name="description" content="{h(description)}">
 <meta property="og:title" content="{h(site_title)}">
 <meta property="og:description" content="{h(description)}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://intro-web-git-review-manuscript-update-equalityact.vercel.app/assets/images/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="차별금지법 한 눈에 보기">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://intro-web-git-review-manuscript-update-equalityact.vercel.app/assets/images/og-image.png">
 <meta name="theme-color" content="#7056BE">
 <link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any">
 </head>
 <body>
 <a class="skip" href="#main">본문으로 바로가기</a>
 <header class="site-header"><div class="wrap">
-  <a class="wordmark" href="index.html">{prose("span", HOME["wordmark"])}</a>
+  <a class="wordmark" href="index.html"><img class="site-logo" src="assets/images/site-logo.svg" width="48" height="36" alt="">{prose("span", HOME["wordmark"])}</a>
   <button class="menu-toggle" type="button" aria-controls="gnb" aria-expanded="false">메뉴 열기</button>
   <nav class="gnb" id="gnb" aria-label="주요 메뉴"><ul>{navigation}</ul></nav>
 </div></header>
