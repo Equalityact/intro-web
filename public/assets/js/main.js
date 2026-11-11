@@ -35,34 +35,51 @@
   spaceBodyBreaks();
   document.addEventListener('manuscript:updated', spaceBodyBreaks);
   let timelineFrame = 0;
+  let timelineLayoutDirty = true;
   function updateHomeTimeline() {
     timelineFrame = 0;
     const stage = $('.home-timeline-stage'), rail = $('.home-timeline-scroll');
     if (!stage || !rail) return;
     const steps = $$('.home-timeline-step', stage);
-    const mobile = matchMedia('(max-width: 1099px)').matches;
-    const enabled = !reducedMotion.matches && !mobile;
-    stage.classList.toggle('scroll-driven', enabled);
-    stage.classList.toggle('line-visible', stage.getBoundingClientRect().top < innerHeight * .85);
-    const distance = Math.max(1, stage.offsetHeight - rail.offsetHeight);
-    const progress = Math.max(0, Math.min(1, (80 - stage.getBoundingClientRect().top) / distance));
-    const active = Math.min(steps.length - 1, Math.floor(progress * (steps.length + 2)) - 1);
-    steps.forEach((step, index) => {
-      const visible = reducedMotion.matches || (mobile ? step.getBoundingClientRect().top < innerHeight * .88 : index <= active);
-      step.classList.toggle('reveal-ready', !reducedMotion.matches);
-      step.classList.toggle('is-visible', visible);
-      step.inert = !visible;
-    });
-    rail.scrollLeft = 0;
-    $$('.home-timeline-step h3, .home-timeline-step h4').forEach(title => {
-      title.style.fontSize = '';
-      if (!mobile && title.scrollWidth > title.clientWidth) {
-        const size = parseFloat(getComputedStyle(title).fontSize);
-        title.style.fontSize = `${size * title.clientWidth / title.scrollWidth}px`;
+    const mobile = matchMedia('(max-width: 767px)').matches;
+    if (timelineLayoutDirty) {
+      stage.classList.toggle('is-vertical', mobile);
+      stage.style.setProperty('--home-timeline-columns', String(steps.length + 1));
+      stage.style.removeProperty('--home-timeline-row');
+      if (!mobile) {
+        const maxCardHeight = Math.max(0, ...steps.map(step => $('a', step).getBoundingClientRect().height));
+        stage.style.setProperty('--home-timeline-row', `${Math.max(250, Math.ceil(maxCardHeight + 36))}px`);
       }
+      timelineLayoutDirty = false;
+    }
+    const bounds = rail.getBoundingClientRect();
+    if (stage.getBoundingClientRect().top < innerHeight * .9) stage.classList.add('line-visible');
+    steps.forEach(step => {
+      const card = $('a', step).getBoundingClientRect();
+      const visible = reducedMotion.matches || (card.bottom > 0 && card.top < innerHeight && (mobile || card.right > bounds.left && card.left < bounds.right));
+      step.classList.toggle('reveal-ready', !reducedMotion.matches);
+      if (visible) step.classList.add('is-visible');
+      step.inert = false;
     });
+    const tools = $('[data-home-timeline-tools]', stage);
+    if (tools) {
+      tools.hidden = mobile || rail.scrollWidth <= rail.clientWidth + 1;
+      $('[data-timeline-prev]', tools).disabled = rail.scrollLeft <= 1;
+      $('[data-timeline-next]', tools).disabled = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1;
+    }
+    if (!rail.dataset.timelineBound) {
+      rail.dataset.timelineBound = 'true';
+      rail.addEventListener('scroll', queueHomeTimeline, { passive: true });
+      $$('[data-timeline-prev], [data-timeline-next]', stage).forEach(button => {
+        button.addEventListener('click', () => {
+          const direction = button.hasAttribute('data-timeline-prev') ? -1 : 1;
+          rail.scrollBy({ left: direction * Math.min(640, rail.clientWidth * .8), behavior: reducedMotion.matches ? 'auto' : 'smooth' });
+        });
+      });
+    }
   }
-  function queueHomeTimeline() {
+  function queueHomeTimeline(event) {
+    if (!event || event.type !== 'scroll') timelineLayoutDirty = true;
     if (!timelineFrame) timelineFrame = requestAnimationFrame(updateHomeTimeline);
   }
   queueHomeTimeline();
