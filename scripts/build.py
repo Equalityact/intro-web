@@ -136,7 +136,7 @@ def layout(filename, title, description, body):
 <meta property="og:image" content="https://intro-web-git-review-manuscript-update-equalityact.vercel.app/assets/images/og-image.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="차별금지법 한 눈에 보기">
+<meta property="og:image:alt" content="차별금지법 한눈에 보기">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://intro-web-git-review-manuscript-update-equalityact.vercel.app/assets/images/og-image.png">
 <meta name="theme-color" content="#7056BE">
