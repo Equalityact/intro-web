@@ -169,8 +169,8 @@ button:disabled { cursor: default; opacity: .45; }
 .hero-lead { white-space: pre-line; max-width: 480px; margin-top: var(--space-5); color: var(--color-line); font-size: 20px; }
 .hero :focus-visible { outline-color: var(--color-yellow); }
 .shape-panel { display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 24px; width: 100%; min-width: 0; aspect-ratio: 1; padding: 30px; border-radius: var(--radius-lg); background: var(--color-purple); color: var(--color-on-purple); text-align: center; }
-.shape-panel .eq { color: var(--color-on-purple); font-size: 120px; font-weight: 500; line-height: .9; }
-.shape-panel .shape-caption { color: var(--color-yellow); font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
+.shape-panel .eq { color: var(--color-yellow); font-size: 120px; font-weight: 500; line-height: .9; }
+.shape-panel .shape-caption { color: var(--color-on-purple); font-family: var(--font-title); font-size: 26px; font-weight: 600; line-height: 1.5; text-wrap: balance; }
 @media (min-width: 768px) {
   .hero-grid > .shape-panel { width: 88%; transform: translateX(-24px); }
 }
