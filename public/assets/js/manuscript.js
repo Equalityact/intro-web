@@ -143,7 +143,23 @@
     const current = $('[aria-selected="true"]',selector)?.getAttribute('aria-controls');
     data.blocks.forEach((area,index) => {
       const tab = elem('button','',area.title);tab.type='button';tab.id=`tab-${area.id}`;tab.setAttribute('role','tab');tab.setAttribute('aria-controls',area.id);tab.setAttribute('aria-selected','false');tab.tabIndex=-1;tabs.append(tab);
-      const panel = elem('section','scene-panel');panel.id=area.id;panel.setAttribute('aria-labelledby',`${area.id}-title`);panel.append(heading('h3',area.title,'scene-area-title',`${area.id}-title`));paras(panel,area.paragraphs);
+      const panel = elem('section','scene-panel');panel.id=area.id;panel.setAttribute('aria-labelledby',`${area.id}-title`);panel.append(heading('h3',area.title,'scene-area-title',`${area.id}-title`));
+      {
+        const mark=elem('span','reading-highlight reading-highlight--pink',area.title);mark.setAttribute('data-underline','');
+        mark.append(svgPath('0 0 300 14','M 2 8 C 22 -1 38 17 57 8 S 91 -1 111 8 S 145 17 166 8 S 201 -1 222 8 S 262 17 298 5'));
+        panel.firstElementChild.replaceChildren(mark);
+      }
+      if(area.paragraphs.length){
+        const intro=elem('div','scene-area-intro reading');
+        const [first,...rest]=area.paragraphs;
+        if(first.text.endsWith(' 영역') && rest.length){
+          const band=elem('div','tag scene-area-band');
+          band.append(addRuns(elem('span'),first.text,first.links),addRuns(elem('span','scene-area-scope'),rest[0].text,rest[0].links));
+          intro.append(band);paras(intro,rest.slice(1));
+        }
+        else paras(intro,area.paragraphs);
+        panel.append(intro);
+      }
       const cards=elem('div','scene-cards');
       area.children.forEach((item,at) => {
         const hasDetails=item.paragraphs.length>0;
@@ -155,7 +171,7 @@
         }else article.append(title);
         cards.append(article);
       });panel.append(cards);fragment.append(panel);
-    });host.replaceChildren(fragment);selector.replaceChildren(tabs);toc(data.blocks);
+    });host.replaceChildren(fragment);selector.replaceChildren(tabs);
     document.dispatchEvent(new CustomEvent('manuscript:scenes',{detail:{selected:current}}));
   }
   function sliced(item, start, end) {
@@ -190,21 +206,28 @@
   }
   function why(data) {
     const oldSections=$$('#main > section.section'); if(!oldSections.length)return;
-    const surveys=$('.why-layout > .survey')?.cloneNode(true), recommendations=$('.recommendations')?.cloneNode(true);
+    const surveys=$('.why-layout .survey')?.cloneNode(true), recommendations=$('.recommendations')?.cloneNode(true);
     const fragment=document.createDocumentFragment();
     data.blocks.forEach((block,index)=>{
       const section=elem('section',`section${index===1?' soft':''}`);section.id=block.id;const id=`${block.id}-title`;section.setAttribute('aria-labelledby',id);
       const wrap=elem('div','wrap'), grid=elem('div','why-layout'), left=elem('div','why-heading'), right=elem('div','why-content reading');
       left.append(heading('h2',block.title,'section-title',id));
-      if(index===0){const copy=elem('div','reading');paras(copy,block.paragraphs);left.append(copy);grid.append(left,surveys || right);}
-      else {if(index===2 && recommendations)right.append(recommendations);whyParagraphs(right,block);grid.append(left,right);}
+      if(index===0){if(surveys)left.append(surveys);paras(right,block.paragraphs);}
+      else {if(index===2 && recommendations)left.append(recommendations);whyParagraphs(right,block);}
+      grid.append(left,right);
       wrap.append(grid);
       if(block.photo){
         const figure=elem('figure','why-photo'),img=elem('img');
         img.src=block.photo.src;img.alt=block.photo.caption;img.width=block.photo.width;img.height=block.photo.height;img.loading='lazy';img.decoding='async';
-        figure.append(img,elem('figcaption','',block.photo.caption));wrap.append(figure);
+        const caption=elem('figcaption','',block.photo.caption);
+        if(block.photo.note)caption.append(elem('span','why-photo-note',block.photo.note));
+        figure.append(img,caption);wrap.append(figure);
       }
       if(index===2){const closing=$('.why-content > .callout',grid);if(closing){closing.classList.add('why-closing');wrap.append(closing);}}
+      if(block.id==='global')block.children.forEach(item=>{
+        const closing=elem('div','callout section-content why-closing');
+        closing.append(heading('h3',item.title,'callout-title'));paras(closing,item.paragraphs);wrap.append(closing);
+      });
       section.append(wrap);fragment.append(section);
     });
     oldSections[0].before(fragment);oldSections.forEach(section=>section.remove());toc(data.blocks.map(block=>({...block,title:block.label || block.title})));
@@ -296,15 +319,24 @@
       const at=item.title.search(/[<〈《「『]/);
       if(at>0)title.replaceChildren(elem('span','resource-title-line',item.title.slice(0,at)),elem('span','resource-title-line',item.title.slice(at)));
       content.append(title,elem('p','by',item.by));paras(content,item.paragraphs);
-      const button=link(item.url,'자료 보기 ','btn purple small');button.append(elem('span','arrow','↗'));content.append(button);li.append(content);fragment.append(li);
+      const more=link(item.url,'자료 보기 ','text-link');const arrow=elem('span','arrow','↗');arrow.setAttribute('aria-hidden','true');more.append(arrow);content.append(more);li.append(content);fragment.append(li);
     });host.replaceChildren(fragment);
   }
   function information(items) {
-    const body=$('.info-table tbody');if(body){const fragment=document.createDocumentFragment();items.forEach(item=>{const row=elem('tr'),label=elem('th','',item.label),cell=elem('td');label.scope='row';
-      if(!item.paragraph.links.length && item.label==='이메일' && /^[^\s@]+@[^\s@]+$/.test(item.paragraph.text))cell.append(link(`mailto:${item.paragraph.text}`,item.paragraph.text,'info-link'));
-      else {addRuns(cell,item.paragraph.text,item.paragraph.links);$$('a',cell).forEach(a=>a.className='info-link');}row.append(label,cell);fragment.append(row);});body.replaceChildren(fragment);}
+    const body=$('.info-table tbody');if(body){const fragment=document.createDocumentFragment();items.forEach(item=>{
+      const newsletter=['뉴스레터','뉴스레터 구독하기'].includes(item.label);
+      const row=elem('tr'),label=elem('th','',newsletter?'뉴스레터':item.label),cell=elem('td');label.scope='row';
+      if(item.label==='이메일')cell.textContent=item.paragraph.text;
+      else {
+        const content=elem('div','info-links');
+        if(newsletter && item.paragraph.links.length)content.append(link(item.paragraph.links[0].url,'구독하기','info-link'));
+        else {addRuns(content,item.paragraph.text,item.paragraph.links);$$('a',content).forEach(a=>a.className='info-link');}
+        cell.append(content);
+      }
+      row.append(label,cell);fragment.append(row);
+    });body.replaceChildren(fragment);}
     const footer=$('.footer-info');if(footer){const fragment=document.createDocumentFragment();items.filter(item=>['제작','홈페이지','SNS','이메일','후원 계좌'].includes(item.label)).forEach(item=>{const dt=elem('dt','',item.label),dd=elem('dd');addRuns(dd,item.paragraph.text,item.paragraph.links);if(item.label==='이메일'&&!item.paragraph.links.length){dd.replaceChildren(link(`mailto:${item.paragraph.text}`,item.paragraph.text));}fragment.append(dt,dd);});footer.replaceChildren(fragment);}
-    const rows=new Map(items.map(item=>[item.label,item.paragraph]));
+    const rows=new Map(items.map(item=>[item.label==='뉴스레터'?'뉴스레터 구독하기':item.label,item.paragraph]));
     for(const [selector,label] of [['[data-share] + a','후원 계좌'],['.join-path:nth-child(2) a','뉴스레터 구독하기'],['.join-path:nth-child(3) a','후원 계좌']]) {
       // The leaflet form is a separate main-page setting, never the donation URL.
       if(selector.startsWith('[data-share]'))continue;
@@ -312,10 +344,11 @@
     }
   }
   const HOME_FIELDS={
+    '통계 링크 문구':'stats_link_label','팩트체크 링크 문구':'questions_link_label','타임라인 링크 문구':'timeline_link_label',
     '사이트 이름':'name','메인 슬로건':'slogan','메인 소개':'description','요약 섹션 제목':'summary_title','법안 이름 안내':'summary_note','히어로 카드 문구':'grounds_title',
     '통계 제목':'stats_title','찬성 비율':'support_value','찬성 설명 제목':'support_title','정책 과제 제목':'policy_title','정책 과제 설명':'policy_caption',
     '국제사회 권고 횟수':'recommendation_value','국제사회 권고 제목':'recommendation_title','국제사회 권고 설명':'recommendation_caption','질문 섹션 제목':'questions_title',
-    '함께하기 제목':'join_title','공유 안내':'share','리플렛 버튼':'leaflet','뉴스레터 안내':'newsletter_question','뉴스레터 설명':'newsletter','뉴스레터 버튼':'newsletter_button','후원 안내':'donate','출처 표시':'source_label'
+    '함께하기 제목':'join_title','공유 안내':'share_question','공유 설명':'share','리플렛 버튼':'leaflet','뉴스레터 안내':'newsletter_question','뉴스레터 설명':'newsletter','뉴스레터 버튼':'newsletter_button','후원 안내':'donate','후원 설명':'donate_description','출처 표시':'source_label'
   };
   function mainPage(data) {
     if(!data)return;
@@ -341,7 +374,7 @@
     if(pillars && $('.pillars')){const fragment=document.createDocumentFragment();pillars.children.forEach((item,index)=>{const article=elem('article','pillar');article.append(elem('div','role',String(index+1).padStart(2,'0')),heading('h3',item.title.replace(/^평등의 기준을\s+세우는 법$/, '평등의 기준을\n세우는 법').replace(/^차별 없는 사회,\s*/, '차별 없는 사회,\n')));paras(article,item.paragraphs);fragment.append(article);});$('.pillars').replaceChildren(fragment);}
     const surveys=data.blocks.find(block=>block.title==='여론조사');
     if(surveys && $('.home-survey')) {
-      const host=$('.home-survey'),fragment=document.createDocumentFragment();fragment.append(heading('h3',page==='index'?'최근 여론 조사 결과':fields.source_label||'출처'));
+      const host=$('.home-survey'),fragment=document.createDocumentFragment();fragment.append(heading('h3',fields.source_label||'최근 여론 조사 결과'));
       surveys.children.forEach(item=>{const row=elem('div','rate-row'),source=item.paragraphs.find(p=>p.links.length),date=item.paragraphs.find(p=>!p.links.length&&!/^(찬성한다|잘 모르겠다|반대한다)\s+\d/.test(p.text));
         const values=['찬성한다','잘 모르겠다','반대한다'].map(label=>{const p=item.paragraphs.find(p=>p.text.startsWith(label+' '));const value=Number(p?.text.match(/(\d+(?:\.\d+)?)%/)?.[1]);if(!Number.isFinite(value)||value<0||value>100)throw new Error('Invalid survey value');return value;});if(values.reduce((a,b)=>a+b,0)>100.5)throw new Error('Invalid survey total');
         const label=elem('div','rate-label');label.append(source?link(source.links[0].url,item.title):elem('span','',item.title));row.append(label);if(date)row.append(paragraph(date,'rate-source'));

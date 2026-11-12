@@ -95,7 +95,7 @@ def linked_paragraphs(item):
     return result
 
 
-def page_hero(filename, toc=()):
+def page_hero(filename, toc=(), controls=""):
     _, number, short, title = next(page for page in PAGES if page[0] == filename)
     links = "".join(f'<li><a href="#{ident}">{prose("span", label)}</a></li>' for ident, label in toc)
     introduction = COPY["page_introductions"][filename]
@@ -105,7 +105,7 @@ def page_hero(filename, toc=()):
     hero_tone = {"about.html": "bright-pink", "scenes.html": "bright-purple", "why.html": "bright-yellow", "qna.html": "bright-pink", "timeline.html": "bright-purple", "resources.html": "bright-yellow"}.get(filename)
     hero_class = f"page-hero page-hero--{hero_tone}" if hero_tone else "page-hero"
     return f'''<section class="{hero_class}"><div class="wrap">
-  {prose("h1", title)}{lead_html}{toc_html}
+  {prose("h1", title)}{lead_html}{toc_html}{controls}
 </div></section>'''
 
 
@@ -206,12 +206,16 @@ for scene in COPY["scenes"]:
   {prose("h4", after, f'class="scene-case-title" id="compare-{sid}-{index}"')}
 </article>'''
     card_class = "scene-cards"
-    scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{prose("h3", scene["title"], f'class="scene-area-title" id="{sid}-title"')}<div class="{card_class}">{cards}</div></section>'
-scenes_body = page_hero("scenes.html", [(s["id"], s["title"]) for s in COPY["scenes"]])
+    intro_paragraphs = scene.get("paragraphs", [])
+    introduction = ""
+    if intro_paragraphs:
+        introduction = f'<div class="scene-area-intro reading"><div class="tag scene-area-band">{prose("span", intro_paragraphs[0])}{prose("span", intro_paragraphs[1], 'class="scene-area-scope"')}</div>{paragraphs(intro_paragraphs[2:])}</div>'
+    area_title = f'<h3 class="scene-area-title" id="{sid}-title" data-manuscript>{wavy_emphasis(scene["title"])}</h3>'
+    scene_sections += f'<section class="scene-panel" id="{sid}" aria-labelledby="{sid}-title">{area_title}{introduction}<div class="{card_class}">{cards}</div></section>'
+scene_controls = f'<div class="scene-selector" role="tablist" aria-label="일상 장면 선택" hidden>{scene_tabs}</div>'
+scenes_body = page_hero("scenes.html", controls=scene_controls)
 scenes_body += f'''<section class="section" aria-labelledby="comparison-title"><div class="wrap">
 {prose("h2", comparison["title"], 'class="section-title comparison-title" id="comparison-title"')}
-{prose("p", comparison["hint"], 'class="section-intro muted" id="scene-hint" hidden')}
-<div class="scene-selector" role="tablist" aria-label="일상 장면 선택" aria-describedby="scene-hint" hidden>{scene_tabs}</div>
 <div class="scene-panels" data-doc-scenes>{scene_sections}</div>
 </div></section>'''
 
@@ -264,7 +268,9 @@ def why_photo(block):
     photo = block.get("photo")
     if not photo:
         return ""
-    return f'<figure class="why-photo"><img src="{h(photo["src"])}" width="{photo["width"]}" height="{photo["height"]}" alt="{h(photo["caption"])}" loading="lazy" decoding="async">{prose("figcaption", photo["caption"])}</figure>'
+    note = prose("span", photo["note"], 'class="why-photo-note"') if photo.get("note") else ""
+    caption = f'<figcaption>{prose("span", photo["caption"])}{note}</figcaption>'
+    return f'<figure class="why-photo"><img src="{h(photo["src"])}" width="{photo["width"]}" height="{photo["height"]}" alt="{h(photo["caption"])}" loading="lazy" decoding="async">{caption}</figure>'
 
 
 why_sections = ""
@@ -273,16 +279,19 @@ for index, block in enumerate(COPY["why"]):
     body = f'<div class="reading">{paragraphs(block["paragraphs"])}</div>'
     if index == 0:
         citizen_paragraphs = emphasised_paragraph(block["paragraphs"][0], block["emphasis"]) + paragraphs(block["paragraphs"][1:])
-        body = f'<div class="why-layout"><div class="why-heading">{title}<div class="reading">{citizen_paragraphs}</div></div>{why_surveys}</div>'
+        body = f'<div class="why-layout"><div class="why-heading">{title}{why_surveys}</div><div class="why-content reading">{citizen_paragraphs}</div></div>'
     elif index == 1:
-        callout = f'<div class="callout purple visual">{prose("strong", block["callout"]["title"])}{prose("p", block["callout"]["body"])}</div>'
+        callout_body = prose("p", block["callout"]["body"])
+        body_link = block["callout"]["body_link"]
+        callout_body = callout_body.replace(h(body_link["text"]), f'<a href="{h(body_link["url"])}" {EXT}>{h(body_link["text"])}</a>', 1)
+        callout = f'<div class="callout purple visual">{prose("strong", block["callout"]["title"])}{callout_body}</div>'
         body = f'''<div class="why-layout"><div class="why-heading">{title}</div>
 <div class="why-content reading">{prose("p", block["paragraphs"][0])}{callout}{prose("p", block["paragraphs"][1])}<p><a class="text-link" href="qna.html#q1">{prose("span", block["question_link"])}</a></p></div></div>'''
     elif index == 2:
         closing = COPY["why_closing"]
         global_paragraphs = emphasised_paragraph(block["paragraphs"][0], block["emphasis"]) + paragraphs(block["paragraphs"][1:])
-        body = f'''<div class="why-layout"><div class="why-heading">{title}</div>
-<div class="why-content reading">{recommendation_card(False)}{global_paragraphs}</div></div>
+        body = f'''<div class="why-layout"><div class="why-heading">{title}{recommendation_card(False)}</div>
+<div class="why-content reading">{global_paragraphs}</div></div>
 <div class="callout section-content why-closing">{prose("p", closing["title"], 'class="callout-title"')}{prose("p", closing["body"])}</div>'''
     else:
         body = title + body
@@ -336,7 +345,7 @@ timeline_body = page_hero("timeline.html")
 timeline_body += f'<section class="section"><div class="wrap"><div class="timeline-periods" data-timeline>{periods}</div></div></section>'
 
 def resource_button(item):
-    return f'<a class="btn purple small" href="{h(item["url"])}" {EXT}>자료 보기 <span aria-hidden="true">↗</span></a>'
+    return f'<a class="text-link" href="{h(item["url"])}" {EXT}>자료 보기 <span aria-hidden="true">↗</span></a>'
 
 
 resource_thumbnails = json.loads((ROOT / "content/resource-thumbnails.json").read_text(encoding="utf-8"))
@@ -360,10 +369,10 @@ resources_body += f'''<section class="section" id="library"><div class="wrap"><u
 <table class="info-table"><tbody>
   <tr><th scope="row">제작</th><td>{prose("span", "차별금지법제정연대")}</td></tr>
   <tr><th scope="row">홈페이지</th><td><div class="info-links">{external(LINKS["home"], "equalityact.kr", "info-link")}</div></td></tr>
-  <tr><th scope="row">후원 계좌</th><td>{prose("p", "우리은행 1006‒201‒507617 차별금지법제정연대", 'class="info-account"')}<div class="info-links">{external(LINKS["donate"], "후원하기", "info-link")}</div></td></tr>
+  <tr><th scope="row">후원 계좌</th><td><div class="info-links">{external(LINKS["donate"], "후원하기", "info-link")}{prose("span", "우리은행 1006‒201‒507617 차별금지법제정연대")}</div></td></tr>
   <tr><th scope="row">SNS</th><td><div class="info-links">{external(LINKS["facebook"], "페이스북 @equalact2017", "info-link")}{external(LINKS["instagram"], "인스타그램 @equalityact_allpeople", "info-link")}{external(LINKS["twitter"], "트위터 @equalact", "info-link")}</div></td></tr>
-  <tr><th scope="row">이메일</th><td><div class="info-links"><a class="info-link" href="mailto:equalact2017@gmail.com">{prose("span", "equalact2017@gmail.com")}</a></div></td></tr>
-  <tr><th scope="row">뉴스레터 구독하기</th><td><div class="info-links">{external(LINKS["newsletter"], HOME["newsletter_button"], "info-link")}</div></td></tr>
+  <tr><th scope="row">이메일</th><td>{prose("span", "equalact2017@gmail.com")}</td></tr>
+  <tr><th scope="row">뉴스레터</th><td><div class="info-links">{external(LINKS["newsletter"], "구독하기", "info-link")}</div></td></tr>
 </tbody></table></div></section>'''
 
 pillars = "".join(f'<article class="pillar"><div class="role" aria-hidden="true">{index:02d}</div>{prose("h3", title)}{prose("p", body)}</article>' for index, (title, body) in enumerate(HOME["pillars"], 1))
@@ -390,16 +399,16 @@ index_body = f'''<section class="hero" aria-labelledby="hero-title"><div class="
 </div><div class="shape-panel"><span class="eq" aria-hidden="true">=</span>{prose("p", HOME["grounds_title"], 'class="shape-caption"')}</div></div>
 <a class="hero-scroll" href="#summary-title" aria-label="다음 섹션으로 이동"><svg viewBox="0 0 48 64" aria-hidden="true" focusable="false"><path d="M24 4v52M7 39l17 17 17-17"/></svg></a></section>
 <section class="section" aria-labelledby="summary-title"><div class="wrap">{prose("h2", HOME["summary_title"], 'class="section-title" id="summary-title"')}<div class="pillars">{pillars}</div><div class="section-foot summary-more">{prose("p", HOME["summary_note"], 'class="caption"')}<a class="btn purple" href="about.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
-<section class="section purple-soft" aria-labelledby="scenes-title"><div class="wrap">{prose("h2", PAGES[1][2], 'class="section-title" id="scenes-title"')}<div class="scene-grid">{scene_cards}</div><div class="section-foot"><a class="btn purple" href="scenes.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
+<section class="section purple-soft" aria-labelledby="scenes-title"><div class="wrap">{prose("h2", PAGES[1][2], 'class="section-title" id="scenes-title"')}<div class="scene-grid">{scene_cards}</div></div></section>
 <section class="section" aria-labelledby="stats-title"><div class="wrap">{prose("h2", HOME["stats_title"], 'class="section-title" id="stats-title"')}
 {stats_content}
-<div class="section-foot"><a class="btn purple" href="why.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
-<section class="section soft" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{home_questions}</div><div class="section-foot"><a class="btn purple" href="qna.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
-<section class="section home-timeline-section" aria-labelledby="home-timeline-title"><div class="wrap">{prose("h2", "타임라인", 'class="section-title" id="home-timeline-title"')}<div class="home-timeline-stage section-content"><div class="home-timeline-tools" data-home-timeline-tools hidden>{prose("p", HOME["timeline_scroll_hint"], 'class="caption"')}<button class="btn small" type="button" data-timeline-prev aria-label="타임라인 이전 내용 보기">←</button><button class="btn small" type="button" data-timeline-next aria-label="타임라인 다음 내용 보기">→</button></div><div class="home-timeline-scroll" tabindex="0" role="region" aria-label="수평 타임라인"><ol class="home-timeline" data-home-timeline>{home_timeline}</ol></div></div><div class="section-foot"><a class="btn purple" href="timeline.html">더 알아보기 <span class="arrow" aria-hidden="true">→</span></a></div></div></section>
+<div class="section-foot"><a class="text-link" href="why.html">{prose("span", HOME["stats_link_label"])} <span aria-hidden="true">→</span></a></div></div></section>
+<section class="section soft" aria-labelledby="qa-title"><div class="wrap">{prose("h2", HOME["questions_title"], 'class="section-title" id="qa-title"')}<div class="qa-list-simple section-content">{home_questions}</div><div class="section-foot"><a class="text-link" href="qna.html">{prose("span", HOME["questions_link_label"])} <span aria-hidden="true">→</span></a></div></div></section>
+<section class="section home-timeline-section" aria-labelledby="home-timeline-title"><div class="wrap">{prose("h2", "타임라인", 'class="section-title" id="home-timeline-title"')}<div class="home-timeline-stage section-content"><div class="home-timeline-tools" data-home-timeline-tools hidden>{prose("p", HOME["timeline_scroll_hint"], 'class="caption"')}<button class="btn small" type="button" data-timeline-prev aria-label="타임라인 이전 내용 보기">←</button><button class="btn small" type="button" data-timeline-next aria-label="타임라인 다음 내용 보기">→</button></div><div class="home-timeline-scroll" tabindex="0" role="region" aria-label="수평 타임라인"><ol class="home-timeline" data-home-timeline>{home_timeline}</ol></div></div><div class="section-foot"><a class="text-link" href="timeline.html">{prose("span", HOME["timeline_link_label"])} <span aria-hidden="true">→</span></a></div></div></section>
 <section class="section pink-soft" id="join" aria-labelledby="join-title"><div class="wrap">{prose("h2", HOME["join_title"], 'class="section-title" id="join-title"')}<div class="join">
-<article class="join-path">{prose("p", HOME["share"])}<div class="actions"><button class="btn small" type="button" data-share hidden>페이지 공유하기</button>{external(LINKS["leaflet"], HOME["leaflet"], "btn purple small")}</div></article>
-<article class="join-path">{prose("p", HOME["newsletter_question"])}{prose("p", HOME["newsletter"])}<div class="actions">{external(LINKS["newsletter"], HOME["newsletter_button"], "btn purple small")}</div></article>
-<article class="join-path">{prose("p", HOME["donate"])}<div class="actions">{external(LINKS["donate"], "후원하기", "btn purple small")}</div></article>
+<article class="join-path">{prose("p", HOME["share_question"], 'class="join-question"')}{prose("p", HOME["share"])}<div class="actions"><button class="btn small" type="button" data-share hidden>페이지 공유하기</button>{external(LINKS["leaflet"], HOME["leaflet"], "btn pink small")}</div></article>
+<article class="join-path">{prose("p", HOME["newsletter_question"], 'class="join-question"')}{prose("p", HOME["newsletter"])}<div class="actions">{external(LINKS["newsletter"], HOME["newsletter_button"], "btn purple small")}</div></article>
+<article class="join-path">{prose("p", HOME["donate"], 'class="join-question"')}{prose("p", HOME["donate_description"])}<div class="actions">{external(LINKS["donate"], "후원하기", "btn yellow small")}</div></article>
 </div></div></section>'''
 
 PAGE_LINK = re.compile(r'href="(index|' + "|".join(name[:-5] for name, *_ in PAGES) + r')\.html(#[^"]*)?"')

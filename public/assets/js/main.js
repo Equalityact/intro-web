@@ -296,7 +296,6 @@
       return index;
     }
     sceneSelector.hidden = false;
-    $('#scene-hint').hidden = false;
     panels.forEach((panel, index) => {
       panel.setAttribute('role', 'tabpanel');
       panel.setAttribute('aria-labelledby', tabs[index].id);
