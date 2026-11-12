@@ -5,7 +5,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parent.parent
 COPY=json.loads((ROOT/'content/manuscript.json').read_text())
 HOME=COPY['home']
-FIELDS=[('사이트 이름','name'),('메인 슬로건','slogan'),('메인 소개','description'),('요약 섹션 제목','summary_title'),('법안 이름 안내','summary_note'),('히어로 카드 문구','grounds_title'),('통계 제목','stats_title'),('찬성 비율','support_value'),('찬성 설명 제목','support_title'),('찬성 설명','support_caption'),('정책 과제 제목','policy_title'),('정책 과제 설명','policy_caption'),('국제사회 권고 횟수','recommendation_value'),('국제사회 권고 제목','recommendation_title'),('국제사회 권고 설명','recommendation_caption'),('질문 섹션 제목','questions_title'),('함께하기 제목','join_title'),('공유 안내','share'),('리플렛 버튼','leaflet'),('뉴스레터 안내','newsletter_question'),('뉴스레터 설명','newsletter'),('뉴스레터 버튼','newsletter_button'),('후원 안내','donate'),('출처 표시','source_label')]
+FIELDS=[('사이트 이름','name'),('메인 슬로건','slogan'),('메인 소개','description'),('요약 섹션 제목','summary_title'),('법안 이름 안내','summary_note'),('히어로 카드 문구','grounds_title'),('통계 제목','stats_title'),('찬성 비율','support_value'),('찬성 설명 제목','support_title'),('정책 과제 제목','policy_title'),('정책 과제 설명','policy_caption'),('국제사회 권고 횟수','recommendation_value'),('국제사회 권고 제목','recommendation_title'),('국제사회 권고 설명','recommendation_caption'),('질문 섹션 제목','questions_title'),('함께하기 제목','join_title'),('공유 안내','share'),('리플렛 버튼','leaflet'),('뉴스레터 안내','newsletter_question'),('뉴스레터 설명','newsletter'),('뉴스레터 버튼','newsletter_button'),('후원 안내','donate'),('출처 표시','source_label')]
 def main_html():
  parts=['<h1>0. 메인페이지</h1>']
  for title,key in FIELDS:

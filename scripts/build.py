@@ -230,7 +230,7 @@ def survey_card(label):
     return f'<div class="survey">{prose("h3", label)}{"".join(survey_rows[:2])}<div class="survey-context">{survey_rows[2]}</div></div>'
 
 
-def home_survey_card():
+def home_survey_card(label):
     rows = []
     for (_, institution, date, url), values in zip(HOME["surveys"][:2], HOME["survey_values"]):
         segments = "".join(f'<span class="survey-segment response-{index}" style="width:{value}%"></span>' for index, value in enumerate(values))
@@ -241,11 +241,11 @@ def home_survey_card():
   <div class="survey-track" aria-hidden="true">{segments}</div>
   <ul class="survey-legend">{legend}</ul>
 </div>''')
-    return f'<div class="survey home-survey">{prose("h3", HOME["source_label"])}{"".join(rows)}</div>'
+    return f'<div class="survey home-survey">{prose("h3", label)}{"".join(rows)}</div>'
 
 
-surveys = home_survey_card()
-why_surveys = home_survey_card()
+surveys = home_survey_card(HOME["source_label"])
+why_surveys = home_survey_card(COPY["why_survey_table_title"])
 dots = '<div class="dots" aria-hidden="true">' + "<span></span>" * 14 + "</div>"
 
 
@@ -256,7 +256,7 @@ def recommendation_card(include_title=True):
     return f'<div class="recommendations">{number}{title}{caption}{dots}</div>'
 
 
-stats_content = f'''<div class="stat-hero stats-summary section-content"><div class="stats-support">{prose("p", HOME["support_value"], 'class="big-number range" data-countup')}{prose("h3", HOME["support_title"], 'class="callout-title"')}{prose("p", HOME["support_caption"], 'class="caption"')}</div>{surveys}
+stats_content = f'''<div class="stat-hero stats-summary section-content"><div class="stats-support">{prose("p", HOME["support_value"], 'class="big-number range" data-countup')}{prose("h3", HOME["support_title"], 'class="callout-title"')}</div>{surveys}
 <article class="policy-priority stats-policy">{prose("h3", HOME["policy_title"], 'class="callout-title"')}{prose("p", HOME["policy_caption"], 'class="caption"')}</article>{recommendation_card()}</div>'''
 
 
@@ -303,9 +303,13 @@ def qa_item(index, question, preview=True):
     preview_text = answer[:cutoff]
     detail_text = answer[cutoff:].lstrip() if preview else answer
     summary = prose("span", preview_text, 'class="q-preview"') if preview else ""
+    if not preview:
+        detail = f'{prose("p", preview_text)}<a class="btn small" href="qna.html#q{index}">더 자세한 답변보기</a>'
+    else:
+        detail = f'<p class="detail-label">자세한 답변</p>{prose("p", detail_text)}'
     return f'''<details class="qa" id="q{index}">
   <summary><span class="q-number" aria-hidden="true">Q{index}</span><span class="q-copy">{prose("span", question["question"], 'class="q-title"')}{summary}</span><span class="q-toggle" aria-hidden="true"></span></summary>
-  <div class="q-detail"><p class="detail-label">자세한 답변</p>{prose("p", detail_text)}</div>
+  <div class="q-detail">{detail}</div>
 </details>'''
 
 

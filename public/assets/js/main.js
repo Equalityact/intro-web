@@ -45,9 +45,10 @@
     if (timelineLayoutDirty) {
       stage.classList.toggle('is-vertical', mobile);
       stage.style.setProperty('--home-timeline-columns', String(steps.length + 1));
-      stage.style.removeProperty('--home-timeline-row');
+      stage.style.removeProperty('--home-timeline-card-height');
       if (!mobile) {
         const maxCardHeight = Math.max(0, ...steps.map(step => $('a', step).getBoundingClientRect().height));
+        stage.style.setProperty('--home-timeline-card-height', `${maxCardHeight}px`);
         stage.style.setProperty('--home-timeline-row', `${Math.max(250, Math.ceil(maxCardHeight + 36))}px`);
       }
       timelineLayoutDirty = false;

@@ -810,7 +810,6 @@
     "stats_title": "차별금지법에 대한 사회적 합의는 여전히 ‘아직’ 일까요?",
     "support_value": "50%이상",
     "support_title": "과반수 이상의 시민이 꾸준히 차별금지법을 원하고 있어요.",
-    "support_caption": "지난 10년 간 차별금지법 제정에 찬성한 여론 조사의 비율",
     "survey_responses": ["찬성한다", "잘 모르겠다", "반대한다"],
     "survey_values": [[55, 15, 29], [51, 20, 29]],
     "policy_title": "시민이 뽑은 정책 과제 1위 ‘차별금지·성평등·인권·소수자 권리 보장’",
@@ -844,7 +843,7 @@
     "newsletter_question": "차별금지법 제정과 반차별 활동 소식이 궁금하다면?",
     "newsletter": "매월 한국사회의 평등 지수를 끌어올리는 월간평등UP",
     "donate": "차별금지법 제정 운동에 함께하고 싶다면?",
-    "source_label": "출처",
+    "source_label": "최근 여론 조사 결과",
     "join_title": "함께하기",
     "newsletter_button": "구독하기"
   },
@@ -861,6 +860,7 @@
     "label": "변화의 장면들",
     "title": "우리의 일상에서는\n무엇이 달라질까요?"
   },
+  "why_survey_table_title": "출처",
   "why_source_label": "차별금지법 제정 찬성",
   "reading_emphasis": [
     {

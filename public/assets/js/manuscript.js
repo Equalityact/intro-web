@@ -237,7 +237,17 @@
       }
       if(!home)copy.append(elem('span','q-preview',previewParagraphs.map(p=>p.text).join(' ')));
       const num=elem('span','q-number',`Q${index+1}`),toggle=elem('span','q-toggle');num.setAttribute('aria-hidden','true');toggle.setAttribute('aria-hidden','true');summary.append(num,copy,toggle);
-      const answer=elem('div','q-detail');answer.append(elem('p','detail-label','자세한 답변'));paras(answer,home?item.paragraphs:detailParagraphs);detail.append(summary,answer);fragment.append(detail);
+      const answer=elem('div','q-detail');
+      if(home){
+        answer.append(elem('p','',previewParagraphs.map(p=>p.text).join(' ')));
+        const more=elem('a','btn small','더 자세한 답변보기');
+        more.href=`qna.html#${item.id}`;
+        answer.append(more);
+      }else{
+        answer.append(elem('p','detail-label','자세한 답변'));
+        paras(answer,detailParagraphs);
+      }
+      detail.append(summary,answer);fragment.append(detail);
     });host.replaceChildren(fragment);document.dispatchEvent(new Event('manuscript:questions'));
   }
   function timeline(periods) {
@@ -303,7 +313,7 @@
   }
   const HOME_FIELDS={
     '사이트 이름':'name','메인 슬로건':'slogan','메인 소개':'description','요약 섹션 제목':'summary_title','법안 이름 안내':'summary_note','히어로 카드 문구':'grounds_title',
-    '통계 제목':'stats_title','찬성 비율':'support_value','찬성 설명 제목':'support_title','찬성 설명':'support_caption','정책 과제 제목':'policy_title','정책 과제 설명':'policy_caption',
+    '통계 제목':'stats_title','찬성 비율':'support_value','찬성 설명 제목':'support_title','정책 과제 제목':'policy_title','정책 과제 설명':'policy_caption',
     '국제사회 권고 횟수':'recommendation_value','국제사회 권고 제목':'recommendation_title','국제사회 권고 설명':'recommendation_caption','질문 섹션 제목':'questions_title',
     '함께하기 제목':'join_title','공유 안내':'share','리플렛 버튼':'leaflet','뉴스레터 안내':'newsletter_question','뉴스레터 설명':'newsletter','뉴스레터 버튼':'newsletter_button','후원 안내':'donate','출처 표시':'source_label'
   };
@@ -311,6 +321,7 @@
     if(!data)return;
     const fields={};data.blocks.forEach(block=>{if(HOME_FIELDS[block.title])fields[HOME_FIELDS[block.title]]=block.paragraphs.map(p=>p.text).join('\n');});
     for(const [key,text] of Object.entries(fields)) {
+      if(page==='index' && key==='source_label')continue;
       $$(`[data-home-field="${key}"]`).forEach(node=>{
         node.dataset.manuscriptText=text;
         if (node.dataset.heroCaptionManaged === 'true') {
@@ -330,7 +341,7 @@
     if(pillars && $('.pillars')){const fragment=document.createDocumentFragment();pillars.children.forEach((item,index)=>{const article=elem('article','pillar');article.append(elem('div','role',String(index+1).padStart(2,'0')),heading('h3',item.title.replace(/^평등의 기준을\s+세우는 법$/, '평등의 기준을\n세우는 법').replace(/^차별 없는 사회,\s*/, '차별 없는 사회,\n')));paras(article,item.paragraphs);fragment.append(article);});$('.pillars').replaceChildren(fragment);}
     const surveys=data.blocks.find(block=>block.title==='여론조사');
     if(surveys && $('.home-survey')) {
-      const host=$('.home-survey'),fragment=document.createDocumentFragment();fragment.append(heading('h3',fields.source_label||'출처'));
+      const host=$('.home-survey'),fragment=document.createDocumentFragment();fragment.append(heading('h3',page==='index'?'최근 여론 조사 결과':fields.source_label||'출처'));
       surveys.children.forEach(item=>{const row=elem('div','rate-row'),source=item.paragraphs.find(p=>p.links.length),date=item.paragraphs.find(p=>!p.links.length&&!/^(찬성한다|잘 모르겠다|반대한다)\s+\d/.test(p.text));
         const values=['찬성한다','잘 모르겠다','반대한다'].map(label=>{const p=item.paragraphs.find(p=>p.text.startsWith(label+' '));const value=Number(p?.text.match(/(\d+(?:\.\d+)?)%/)?.[1]);if(!Number.isFinite(value)||value<0||value>100)throw new Error('Invalid survey value');return value;});if(values.reduce((a,b)=>a+b,0)>100.5)throw new Error('Invalid survey total');
         const label=elem('div','rate-label');label.append(source?link(source.links[0].url,item.title):elem('span','',item.title));row.append(label);if(date)row.append(paragraph(date,'rate-source'));
