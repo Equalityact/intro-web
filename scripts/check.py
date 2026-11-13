@@ -64,7 +64,7 @@ class ManuscriptAudit(HTMLParser):
     """Check all manuscript blocks and all remaining Korean body text."""
     VOID = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}
     UI = {normalise(value) for value in [
-        "본문으로 바로가기", "메뉴 열기", "메뉴 닫기", "← 이전", "다음 →",
+        "본문으로 바로가기", "메뉴", "← 이전", "다음 →",
         "질문 검색", "모두 펼치기", "모두 접기", "검색 결과 없음", "자세한 답변", "더 자세한 답변보기",
         "자료 보기", "알아보기", "질문 살펴보기", "더 알아보기", "더 알아보기 →", "페이지 공유하기",
     ]}

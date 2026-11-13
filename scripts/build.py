@@ -148,7 +148,7 @@ def layout(filename, title, description, body):
 <a class="skip" href="#main">본문으로 바로가기</a>
 <header class="site-header"><div class="wrap">
   <a class="wordmark" href="index.html"><img class="site-logo" src="assets/images/site-logo.svg" width="48" height="36" alt="">{prose("span", HOME["wordmark"])}</a>
-  <button class="menu-toggle" type="button" aria-controls="gnb" aria-expanded="false">메뉴 열기</button>
+  <button class="menu-toggle" type="button" aria-controls="gnb" aria-expanded="false">메뉴</button>
   <nav class="gnb" id="gnb" aria-label="주요 메뉴"><ul>{navigation}</ul></nav>
 </div></header>
 <main id="main">{body}</main>
@@ -313,7 +313,7 @@ def qa_item(index, question, preview=True):
     detail_text = answer[cutoff:].lstrip() if preview else answer
     summary = prose("span", preview_text, 'class="q-preview"') if preview else ""
     if not preview:
-        detail = f'{prose("p", preview_text)}<a class="btn small" href="qna.html#q{index}">더 자세한 답변보기</a>'
+        detail = f'{prose("p", preview_text)}<a class="text-link" href="qna.html#q{index}">더 자세한 답변보기 <span aria-hidden="true">→</span></a>'
     else:
         detail = f'<p class="detail-label">자세한 답변</p>{prose("p", detail_text)}'
     return f'''<details class="qa" id="q{index}">

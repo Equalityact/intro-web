@@ -253,7 +253,6 @@
   function setMenu(open, returnFocus = false) {
     navigation.hidden = compact.matches && !open;
     menuButton.setAttribute('aria-expanded', String(compact.matches && open));
-    menuButton.textContent = open && compact.matches ? '메뉴 닫기' : '메뉴 열기';
     if (returnFocus) menuButton.focus();
   }
   menuButton.addEventListener('click', () => setMenu(navigation.hidden));

@@ -263,7 +263,10 @@
       const answer=elem('div','q-detail');
       if(home){
         answer.append(elem('p','',previewParagraphs.map(p=>p.text).join(' ')));
-        const more=elem('a','btn small','더 자세한 답변보기');
+        const more=elem('a','text-link','더 자세한 답변보기 ');
+        const arrow=elem('span','','→');
+        arrow.setAttribute('aria-hidden','true');
+        more.append(arrow);
         more.href=`qna.html#${item.id}`;
         answer.append(more);
       }else{
